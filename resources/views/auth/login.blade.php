@@ -18,8 +18,10 @@
     <!-- Core Css -->
     <link id="themeColors" rel="stylesheet" href="{{ asset('template/dist/css/style.min.css') }}" />
     {{-- Toastify --}}
-	<link rel="stylesheet" type="text/css" href="{{ asset('template/toastify/toastify.min.css') }}">
-	<script type="text/javascript" src="{{ asset('template/toastify/toastify.min.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{{ asset('template/toastify/toastify.min.css') }}">
+    <script type="text/javascript" src="{{ asset('template/toastify/toastify.min.js') }}"></script>
+    {{-- QR code --}}
+    <script src="{{ asset('template/qrcode/qrcode.min.js') }}"></script>
 </head>
 
 <body>
@@ -91,11 +93,10 @@
                     <div class="col-md-8 col-lg-6 col-xxl-3">
                         <div class="card mb-0">
                             <div class="card-body">
-                                <a href="" class="text-nowrap logo-img text-center d-block mb-5 w-100">
+                                <a href="javascript:void(0)" data-bs-toggle="modal" data-bs-target="#ModalQrCode" class="text-nowrap logo-img text-center d-block mb-5 w-100">
                                     <img src="{{ asset('template/dist/images/logos/dark-logo.svg') }}" width="180" alt="">
                                 </a>
                                 <div class="row">
-
                                 </div>
                                 <form action="{{ route('login') }}" method="POST" autocomplete="off">
                                     @csrf
@@ -132,6 +133,45 @@
         </div>
     </div>
 
+    {{-- MODAL QR-CODE --}}
+    <div class="modal fade" id="ModalQrCode" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header d-flex align-items-center">
+            <h4 class="modal-title" id="myLargeModalLabel">
+              {{ url()->current() }}
+            </h4>
+          </div>
+          <div class="modal-body">
+            <div class="card-body">
+              <!--/row-->
+              <div class="col-12">
+                <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
+                  <div class="d-flex align-items-center font-medium me-3 me-md-0">
+                    <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
+                    Scan untuk mengakses aplikasi
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12" align="center">
+                  {{--  --}}
+                  <br>
+                  <div id="qrcode"></div>
+                  {{--  --}}
+                </div>
+                <!--/span-->
+              </div>
+              <!--/row-->
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup&emsp;<i class="ti ti-x"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!--  Import Js Files -->
     <script src="{{ asset('template/dist/libs/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('template/dist/libs/simplebar/dist/simplebar.min.js') }}"></script>
@@ -161,6 +201,8 @@
     @enderror
 
     <script>
+      var currentUrl = "{{ url()->current() }}";
+      var qrcode = new QRCode("qrcode", currentUrl);
       function notify(pesan) {
         Toastify({
             text: pesan,

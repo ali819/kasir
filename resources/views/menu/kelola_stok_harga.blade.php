@@ -39,7 +39,7 @@
           </div>
         </div>
         <div class="col-12">
-            <button type="button" class="btn btn-outline-primary col-12 btnTambahBarang" data-bs-toggle="modal" data-bs-target="#ModalTambahBarang" style="font-weight:bold"><i class="ti ti-pencil-plus"></i>&emsp;Tambahkan Barang</button>
+            <button type="button" class="btn btn-primary col-12 btnTambahBarang" data-bs-toggle="modal" data-bs-target="#ModalTambahBarang" style="font-weight:bold"><i class="ti ti-pencil-plus"></i>&emsp;Tambahkan Barang</button>
         </div>
         <div class="col-12">
             <br>
@@ -48,7 +48,7 @@
             <h5 class="card-title fw-semibold mb-0 lh-sm" style="color: rgb(48, 48, 48)">Pencarian</h5>
         </div>
         <div class="col-6" align="right">
-            <button type="button" class="btn btn-primary text btnRefreshData"><i class="ti ti-reload"></i>&emsp;Refresh Data</button>
+            <button type="button" class="btn btn-outline-primary text btnRefreshData"><i class="ti ti-reload"></i>&emsp;Refresh Data</button>
         </div>
     </div>
     <div class="w-100 position-relative overflow-hidden">

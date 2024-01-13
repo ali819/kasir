@@ -209,10 +209,10 @@
                             </p>
                           </div>
                         </div>
-                        <div class="message-body">
+                        <div class="message-body" style="padding-right:20px; padding-left:20px;">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
-                                <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="btn btn-outline-primary" style="width: 100%">Keluar Aplikasi</a>
+                                <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="btn btn-outline-primary" style="width: 100%;">Keluar Aplikasi</a>
                             </form>
                           <br>
                         </div>
