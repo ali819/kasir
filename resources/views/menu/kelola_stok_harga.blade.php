@@ -136,7 +136,7 @@
                   <label for=""><b>Jumlah Stok ( Dihitung Pcs )</b></label>
                   <input type="number" id="tbhStok" name="tbhStok" class="form-control" placeholder="0 - 999999">
                   <label for=""><b>Keterangan</b></label>
-                  <textarea name="tbhKeterangan" id="tbhKeterangan" class="form-control" cols="30" rows="5" placeholder="Isi keterangan jika diperlukan .."></textarea>
+                  <textarea name="tbhKeterangan" id="tbhKeterangan" class="form-control" cols="30" rows="3" placeholder="Isi keterangan jika diperlukan .."></textarea>
                   {{--  --}}
                 </div>
                 <!--/span-->
@@ -190,7 +190,7 @@
                   <label for=""><b>Jumlah Stok ( Dihitung Pcs )</b></label>
                   <input type="number" id="updateStok" name="updateStok" class="form-control" placeholder="0 - 999999">
                   <label for=""><b>Keterangan</b></label>
-                  <textarea name="updateKeterangan" id="updateKeterangan" class="form-control" cols="30" rows="5" placeholder="Isi keterangan jika diperlukan .."></textarea>
+                  <textarea name="updateKeterangan" id="updateKeterangan" class="form-control" cols="30" rows="3" placeholder="Isi keterangan jika diperlukan .."></textarea>
                   {{--  --}}
                 </div>
                 <!--/span-->

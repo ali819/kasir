@@ -16,7 +16,15 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('auth/login');
+ 
+     // Periksa apakah pengguna sudah login
+     if (auth()->check()) {
+        // Jika sudah login, arahkan ke laman dashboard
+        return redirect()->route('dashboard');
+    }
+
+    // Jika belum login, tampilkan laman login
+    return view('auth.login');
 });
 
 Route::get('/dashboard', function () {
