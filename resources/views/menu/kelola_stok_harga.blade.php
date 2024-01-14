@@ -2,6 +2,12 @@
 @section('content')
 @section('title', 'Stok & Harga')
 
+<style>
+  .custom-d {
+    margin-top: 10px;
+  }
+</style>
+
 {{-- MAIN --}}
 <div class="container-fluid">
     <!-- --------------------------------------------------- -->
@@ -69,6 +75,15 @@
               </select>
             </div>
           </div>
+          <div class="col-md-12">  
+            <div class="mb-3">
+              <select name="cariKategoriBarang" id="cariKategoriBarang" class="form-control">
+                <option value="">- Semua Kategori -</option>
+                <option value="satuan_tetap">Tampilkan : Satuan Tetap</option>
+                <option value="satuan_tidak_tetap">Tampilkan : Satuan Tidak Tetap</option>
+              </select>
+            </div>
+          </div>
           <div class="col-12">
             <div class="progress">
               <div class="progress-bar progress-bar-striped bg-primary progress-bar-animated animasiProgressBar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
@@ -127,16 +142,17 @@
                   {{--  --}}
                   <label for="" class=""><b>Nama Barang</b></label>
                   <input type="text" class="form-control" id="tbhNamaBarang" name="tbhNamaBarang" placeholder="Nama barang .." required>
-                  <label for=""><b>Harga Per-Barang ( 1 Barang )</b></label>
-                  <input type="number" id="tbhHargaPerBiji" name="tbhHargaPerBiji" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" required>
-                  <label for=""><b>Harga Grosir</b></label>
-                  <input type="number" id="tbhHargaGrosir" name="tbhHargaGrosir" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" required>
-                  <label for=""><b>1 Grosir = Berapa Barang ?</b></label>
-                  <input type="number" id="tbhQtyGrosir" name="tbhQtyGrosir" class="form-control" placeholder="0 - 999999" required>
-                  <label for=""><b>Jumlah Stok ( Dihitung Pcs )</b></label>
-                  <input type="number" id="tbhStok" name="tbhStok" class="form-control" placeholder="0 - 999999">
-                  <label for=""><b>Keterangan</b></label>
-                  <textarea name="tbhKeterangan" id="tbhKeterangan" class="form-control" cols="30" rows="3" placeholder="Isi keterangan jika diperlukan .."></textarea>
+                  <label for="" class=""><b>Kategori Barang</b></label>
+                  <select name="tbhKategoriBarang" id="tbhKategoriBarang" class="form-control" required>
+                    <option value="">- Pilih -</option>
+                    <option value="satuan_tetap">Barang Satuan Tetap</option>
+                    <option value="satuan_tidak_tetap">Barang Satuan Tidak Tetap</option>
+                  </select>
+                  
+                  {{--  --}}
+                  <div id="DataBarangDynamic">
+                    
+                  </div>
                   {{--  --}}
                 </div>
                 <!--/span-->
@@ -144,9 +160,9 @@
               <!--/row-->
             </div>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer" style="margin-top:20px;">
               <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal&emsp;<i class="ti ti-x"></i></button>
-              <button type="submit" class="btn btn-primary font-medium btnKonfirmasiTambahBarang"><i class="ti ti-check"></i>&emsp;Konfirmasi</button>
+              <button type="submit" class="btn btn-primary font-medium btnKonfirmasiTambahBarang" disabled>Silahkan Pilih Kategori..</button>
           </div>
         </form>
       </div>
@@ -181,7 +197,7 @@
                   <input type="number" class="form-control" id="updateId" name="updateId" placeholder=".." required hidden>
                   <label for="" class=""><b>Nama Barang</b></label>
                   <input type="text" class="form-control" id="updateNamaBarang" name="updateNamaBarang" placeholder="Nama barang .." required>
-                  <label for=""><b>Harga Per-Barang ( 1 Barang )</b> </label>
+                  <label for=""><b>Harga Per-Barang ( Eceran )</b> </label>
                   <input type="number" id="updateHargaPerBiji" name="updateHargaPerBiji" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" value="0" required>
                   <label for=""><b>Harga Grosir</b></label>
                   <input type="number" id="updateHargaGrosir" name="updateHargaGrosir" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" value="0" required>
@@ -259,22 +275,40 @@
                         var harga_per_biji = row.harga_per_biji;
                         var harga_grosir = row.harga_grosir;
                         var stok = row.stok;
+                        var kategori = row.kategori_barang;
 
-                        var views = `
-                            <div class="d-flex align-items-center">
-                                <div class="ms-3" style="margin-left: 0rem !important;">
-                                <h6 class="fw-semibold mb-0 fs-4">${trimText(nama_barang)}</h6>
-                                <p class="mb-0">${formatRupiah(harga_per_biji)} / ${formatRupiah(harga_grosir)}</p>
-                                <p class="mb-0">[&emsp;<b>${stok}</b> Pcs&emsp;]</p>
-                                </div>
-                            </div>
-                        `;
+                        if(kategori == 'satuan_tetap') {
+                          var views = `
+                              <div class="d-flex align-items-center">
+                                  <div class="ms-3" style="margin-left: 0rem !important;">
+                                  <h6 class="fw-semibold mb-0 fs-4">${trimText(nama_barang)}</h6>
+                                  <p class="mb-0">${formatRupiah(harga_per_biji)} / ${formatRupiah(harga_grosir)}</p>
+                                  <p class="mb-0">[&emsp;<b>${stok}</b> Pcs&emsp;]</p>
+                                  </div>
+                              </div>
+                          `;
+                          
+                        } else if(kategori == 'satuan_tidak_tetap') {
+                          var views = `
+                              <div class="d-flex align-items-center">
+                                  <div class="ms-3" style="margin-left: 0rem !important;">
+                                  <h6 class="fw-semibold mb-0 fs-4">${trimText(nama_barang)}</h6>
+                                  <p class="mb-0">Barang Satuan Tidak Tetap</p>
+                                  <p class="mb-0">[&emsp;<b>?</b>&emsp;]</p>
+                                  </div>
+                              </div>
+                          `;
+
+                        } else {
+                          var views = `Barang Tidak Valid !`;
+                        }
+
 
                         return views;
                     }
                 },
                 {
-                    data: 'created_at',
+                    data: 'updated_at',
                     orderable: true,
                     render: function(data, type, row, meta) {
                         var buttonList = `
@@ -289,6 +323,10 @@
                         return buttonList;
                     }
                 },
+                {
+                  data: 'kategori_barang',
+                  visible: false
+                }
         
             ],
             drawCallback: function(settings) {
@@ -310,6 +348,10 @@
         $('#cariStok').on('change', function() {
           animasiProgressBar_run();
           tabel_stok.draw();
+        });
+        $('#cariKategoriBarang').on('change', function() {
+          animasiProgressBar_run();
+          tabel_stok.column(3).search($('#cariKategoriBarang').val()).draw();
         });
 
         function trimText(text) {
@@ -364,6 +406,9 @@
                   if(response.kode == 200) {
                     // kosongkan form
                     $('#FormTambahBarang')[0].reset();
+                    $('#DataBarangDynamic').html('');
+                    $('.btnKonfirmasiTambahBarang').attr('disabled',true);
+                    $('.btnKonfirmasiTambahBarang').html('Silahkan Pilih Kategori..');
                     // toast
                     toastSuccess(response.pesan);
                     // draw
@@ -372,16 +417,18 @@
                   } else if(response.kode == 422) {
 
                     errorHandlerToast(response.pesan);
+                    $('.btnKonfirmasiTambahBarang').html(btnValue);
+                    $('.btnKonfirmasiTambahBarang').attr('disabled',false);
 
                   }
                 }, error: function (error) {
 
                   toastError("Oops! Terjadi kesalahan.");
-                
-                }, complete: function () {
                   $('.btnKonfirmasiTambahBarang').html(btnValue);
                   $('.btnKonfirmasiTambahBarang').attr('disabled',false);
+                
                 }
+
               });
         } else {
           return;
@@ -390,20 +437,34 @@
 
     // EDIT & UPDATE
     $(document).on('click','.btnEditStok', function() {
-        $('#updateId').val($(this).attr('data-id'));
-        $('#updateTitleNamaBarang').html($(this).attr('data-nama-barang'));
-        $('#updateNamaBarang').val($(this).attr('data-nama-barang'));
-        $('#updateHargaPerBiji').val($(this).attr('data-harga-per-biji'));
-        $('#updateHargaGrosir').val($(this).attr('data-harga-grosir'));
-        $('#updateStok').val($(this).attr('data-stok'));
-        $('#updateQtyGrosir').val($(this).attr('data-qty-grosir'));
-        if ($(this).attr('data-keterangan') !== 'null') {
-            $('#updateKeterangan').val($(this).attr('data-keterangan'));
-        } else {
-          $('#updateKeterangan').val('');
-        }
+      var id = $(this).attr('data-id');
+      var namaBarang = $(this).attr('data-nama-barang');
+      var hargaPerBiji = $(this).attr('data-harga-per-biji');
+      var hargaGrosir = $(this).attr('data-harga-grosir');
+      var stok = $(this).attr('data-stok');
+      var qtyGrosir = $(this).attr('data-qty-grosir');
+      var keterangan = ($(this).attr('data-keterangan') !== 'null') ? $(this).attr('data-keterangan') : '';
+      var kategori_barang = $(this).attr('data-kategori-barang');
+
+      $('#updateId').val(id);
+      $('#updateTitleNamaBarang').html(namaBarang);
+      $('#updateNamaBarang').val(namaBarang);
+      $('#updateHargaPerBiji').val(hargaPerBiji);
+      $('#updateHargaGrosir').val(hargaGrosir);
+      $('#updateStok').val(stok);
+      $('#updateQtyGrosir').val(qtyGrosir);
+      $('#updateKeterangan').val(keterangan);
+
+      if(kategori_barang === 'satuan_tetap') {
         $('#ModalUpdateBarang').modal('show');
+      } else if(kategori_barang === 'satuan_tidak_tetap') {
+        
+      } else {
+
+      }
+
     });
+    // BARANG SATUAN TETAP
     $('#FormUpdateBarang').on('submit', function(event) {
         event.preventDefault();
 
@@ -450,6 +511,8 @@
         var valueName = $(this).val();
         $('#updateTitleNamaBarang').html(valueName);
     });
+    // BARANG SATUAN TIDAK TETAP
+
 
     // HAPUS
     $(document).on('click','.btnHapusStok', function() {
@@ -507,6 +570,118 @@
         toastSuccess(hasil);
 
     });
+
+    // KATEGORI EVENT
+    var BarangSatuanTetap = 
+    `
+      <div class="col-12" style="margin-top:10px;">
+        <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
+          <div class="d-flex align-items-center font-medium me-3 me-md-0">
+            <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
+            Satuan Tetap : barang yang bisa dijual 'Eceran' & 'Grosir', contohnya sabun, bolpoin, dll
+          </div>
+        </div>
+      </div>
+      <label for=""><b>Harga Per-Barang ( Eceran )</b></label>
+      <input type="number" id="tbhHargaPerBiji" name="tbhHargaPerBiji" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" required>
+      <label for=""><b>Harga Grosir</b></label>
+      <input type="number" id="tbhHargaGrosir" name="tbhHargaGrosir" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" required>
+      <label for=""><b>1 Grosir = Berapa Barang ?</b></label>
+      <input type="number" id="tbhQtyGrosir" name="tbhQtyGrosir" class="form-control" placeholder="0 - 999999" required>
+      <label for=""><b>Jumlah Stok ( Dihitung Pcs )</b></label>
+      <input type="number" id="tbhStok" name="tbhStok" class="form-control" placeholder="0 - 999999">
+      <label for=""><b>Keterangan</b></label>
+      <textarea name="tbhKeterangan" id="tbhKeterangan" class="form-control" cols="30" rows="3" placeholder="Isi keterangan jika diperlukan .."></textarea>
+    `;
+    var BarangSatuanTidakTetap = 
+    `
+      <div class="col-12" style="margin-top:10px;">
+        <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
+          <div class="d-flex align-items-center font-medium me-3 me-md-0">
+            <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
+            Satuan Tidak Tetap : setiap pembelian barang harus di timbang terlebih dahulu contohnya beras, gula, dll
+          </div>
+        </div>
+      </div>
+      <div class="row">
+          <div class="col-4">
+            <label for=""><b>Satuan</b></label>
+            <input type="text" class="form-control custom-d capitalEachWord" name="dynamicTbhInput[0][tbhSatuanDynamic]" id="" placeholder="Kg, Gram, Pack, dll" required>
+          </div>
+          <div class="col-6">
+            <label for=""><b>Harga Per-Satuan</b></label>
+            <input type="number" class="form-control custom-d terbilang" name="dynamicTbhInput[0][tbhHargaSatuanDynamic]" id="dynamicUrutan0" placeholder="Rp ( 0 - 99999999 )" required>
+          </div>
+          <div class="col-2">
+            <button type="button" class="btn btn-primary btnTambahDataSatuan" style="margin-top:31px; float:right;"><i class="ti ti-plus"></i></button>
+          </div>
+      </div>
+      <div class="DynamicInputan">
+        
+      </div>
+    `;
+    $(document).on('change','#tbhKategoriBarang', function() {
+        
+      var value = $(this).val();
+      var dynamicForm = $('#DataBarangDynamic');
+      var btnSubmit = $('.btnKonfirmasiTambahBarang');
+      var btnValueDefault = '<i class="ti ti-check"></i>&emsp;Konfirmasi';
+
+      if(value === 'satuan_tetap') {
+        dynamicForm.html(BarangSatuanTetap);
+        btnSubmit.attr('disabled',false);
+        btnSubmit.html(btnValueDefault);
+      } else if(value === 'satuan_tidak_tetap') {
+        dynamicForm.html(BarangSatuanTidakTetap);
+        btnSubmit.attr('disabled',false);
+        btnSubmit.html(btnValueDefault);
+      } else {
+        dynamicForm.html('');
+        btnSubmit.attr('disabled',true);
+        btnSubmit.html('Silahkan Pilih Kategori..');
+      }
+
+    });
+
+    // DYNAMIC INPUTAN
+    let hitungan = 1;
+    $(document).on('click','.btnTambahDataSatuan', function() {
+        $('.DynamicInputan').append(
+          `
+            <div class="row" id="DataSatuanDynamic${hitungan}">
+              <div class="col-4">
+                <input type="text" class="form-control custom-d capitalEachWord" name="dynamicTbhInput[${hitungan}][tbhSatuanDynamic]" id="" placeholder="Kg, Gram, Pack, dll" required>
+              </div>
+              <div class="col-6">
+                <input type="number" class="form-control custom-d terbilang" name="dynamicTbhInput[${hitungan}][tbhHargaSatuanDynamic]" id="dynamicUrutan${hitungan}" placeholder="Rp ( 0 - 99999999 )" required>
+              </div>
+              <div class="col-2">
+                <button type="button" class="btn btn-danger btnHapusDataSatuan" data-id="DataSatuanDynamic${hitungan}" style="margin-top:11px; float:right;"><i class="ti ti-trash"></i></button>
+              </div>
+            </div>
+          `
+        );
+
+        hitungan ++;
+
+    });
+    $(document).on('click','.btnHapusDataSatuan', function () { 
+        var id_inputan = $(this).attr('data-id');
+        $('#'+id_inputan).remove(); 
+    });
+
+    $(document).on('input', '.capitalEachWord', function() {
+        var value = $(this).val();
+        var convertedText = capitalizeEachWord(value);
+    
+        $(this).val(convertedText);
+    });
+    // Fungsi untuk mengonversi teks menjadi huruf kapital di awal setiap kata
+    function capitalizeEachWord(text) {
+        return text.toLowerCase().replace(/(?:^|\s)\S/g, function(char) {
+            return char.toUpperCase();
+        });
+    }
 
     // PROGRESSBAR
     function animasiProgressBar_run() {

@@ -138,14 +138,14 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header d-flex align-items-center">
-            <h4 class="modal-title" id="myLargeModalLabel">
+            <h4 class="modal-title" id="myLargeModalLabel" hidden>
               {{ url()->current() }}
             </h4>
           </div>
           <div class="modal-body">
             <div class="card-body">
               <!--/row-->
-              <div class="col-12">
+              <div class="col-12" hidden>
                 <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
                   <div class="d-flex align-items-center font-medium me-3 me-md-0">
                     <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>

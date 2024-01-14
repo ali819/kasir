@@ -48,67 +48,152 @@ class AdminController extends Controller
     }
     public function tambah_barang_baru(Request $request)
     {
-        $messages = [
-            'tbhNamaBarang.required' => 'Nama barang tidak boleh kosong!',
-            'tbhNamaBarang.unique' => 'Nama barang sudah ada!',
-            'tbhHargaPerBiji.required' => 'Harga satuan tidak boleh kosong!',
-            'tbhHargaPerBiji.numeric' => 'Harga satuan harus angka!',
-            'tbhHargaGrosir.required' => 'Harga grosir tidak boleh kosong!',
-            'tbhHargaGrosir.numeric' => 'Harga grosir harus angka!',
-            'tbhQtyGrosir.required' => 'Jumlah grosir tidak boleh kosong!',
-            'tbhQtyGrosir.numeric' => 'Jumlah grosir harus angka!'
-        ];
-        
-        $validator = Validator::make($request->all(), [
-            'tbhNamaBarang' => ['required','unique:stok_barang,nama_barang'],
-            'tbhHargaPerBiji' => ['required','numeric'],
-            'tbhHargaGrosir' => ['required','numeric'],
-            'tbhQtyGrosir' => ['required','numeric'],
-        ], $messages);
+        $kategori = $request->tbhKategoriBarang;
+        if($kategori == 'satuan_tetap') {
+
+            $messages = [
+                'tbhNamaBarang.required' => 'Nama barang tidak boleh kosong!',
+                'tbhNamaBarang.unique' => 'Nama barang sudah ada!',
+                'tbhHargaPerBiji.required' => 'Harga satuan tidak boleh kosong!',
+                'tbhHargaPerBiji.numeric' => 'Harga satuan harus angka!',
+                'tbhHargaGrosir.required' => 'Harga grosir tidak boleh kosong!',
+                'tbhHargaGrosir.numeric' => 'Harga grosir harus angka!',
+                'tbhQtyGrosir.required' => 'Jumlah grosir tidak boleh kosong!',
+                'tbhQtyGrosir.numeric' => 'Jumlah grosir harus angka!'
+            ];
+            $validator = Validator::make($request->all(), [
+                'tbhNamaBarang' => ['required','unique:stok_barang,nama_barang'],
+                'tbhHargaPerBiji' => ['required','numeric'],
+                'tbhHargaGrosir' => ['required','numeric'],
+                'tbhQtyGrosir' => ['required','numeric'],
+            ], $messages);
+            // Respon jika validasi gagal
+            if ($validator->fails()) {
     
-        // Respon jika validasi gagal
-        if ($validator->fails()) {
+                return response()->json([
+                    'kode' => 422,
+                    'pesan' => $validator->errors(),
+                ]); 
+                
+            }
 
-            return response()->json([
-                'kode' => 422,
-                'pesan' => $validator->errors(),
-            ]); 
+            // jika berhasil
+            $nama_barang = $request->tbhNamaBarang;
+            $harga_per_biji = $request->tbhHargaPerBiji;
+            $harga_grosir = $request->tbhHargaGrosir;
+            $kategori_barang = 'satuan_tetap';
+            $qty_grosir = $request->tbhQtyGrosir;
+            $stok = $request->tbhStok;
+            if($stok == null) {
+                $stok = 0;
+            }
+            if (!is_numeric($stok)) {
+                $stok = 0;
+            }
+            $keterangan = $request->tbhKeterangan;
+            $timestamp = Carbon::now();
+
+        } else if($kategori == 'satuan_tidak_tetap') {
+            $messages = [
+                'tbhNamaBarang.required' => 'Nama barang tidak boleh kosong!',
+                'tbhNamaBarang.unique' => 'Nama barang sudah ada!',
+                'dynamicTbhInput.*.tbhHargaSatuanDynamic.required' => 'Harga satuan tidak boleh kosong!',
+                'dynamicTbhInput.*.tbhHargaSatuanDynamic.numeric' => 'Harga satuan harus angka!',
+                'dynamicTbhInput.*.tbhSatuanDynamic.required' => 'Satuan tidak boleh kosong!',
+            ];
+            $validator = Validator::make($request->all(), [
+                'tbhNamaBarang' => ['required','unique:stok_barang,nama_barang'],
+                'dynamicTbhInput.*.tbhHargaSatuanDynamic' => ['required', 'numeric'],
+                'dynamicTbhInput.*.tbhSatuanDynamic' => ['required'],
+            ], $messages);
+            // Respon jika validasi gagal
+            if ($validator->fails()) {
+    
+                return response()->json([
+                    'kode' => 422,
+                    'pesan' => $validator->errors(),
+                ]); 
+                
+            }
+
+            // jika berhasil
+            $nama_barang = $request->tbhNamaBarang;
+            $harga_per_biji = 0;
+            $harga_grosir = 0;
+            $kategori_barang = 'satuan_tidak_tetap';
+            $qty_grosir = 1;
+            $stok = 0;
+            $keterangan = null;
+            $timestamp = Carbon::now();
+            // 
+            $dynamicForm = $request->input('dynamicTbhInput');
             
+        } else {
+            return abort(500);
         }
 
-        // jika berhasil
-        $nama_barang = $request->tbhNamaBarang;
-        $harga_per_biji = $request->tbhHargaPerBiji;
-        $harga_grosir = $request->tbhHargaGrosir;
-        $kategori_barang = 'satuan_tetap';
-        $qty_grosir = $request->tbhQtyGrosir;
-        $stok = $request->tbhStok;
-        if($stok == null) {
-            $stok = 0;
-        }
-        if (!is_numeric($stok)) {
-            $stok = 0;
-        }
-        $keterangan = $request->tbhKeterangan;
-        $timestamp = Carbon::now();
+        // DB transaction 
+        try {
+            // Memulai transaksi database
+            DB::beginTransaction();
 
-        DB::table('stok_barang')->insert([
-            'nama_barang' => $nama_barang,
-            'harga_per_biji' => $harga_per_biji,
-            'harga_grosir' => $harga_grosir,
-            'kategori_barang' => $kategori_barang,
-            'qty_grosir' => $qty_grosir,
-            'stok' => $stok,
-            'keterangan' => $keterangan,
-            'created_at' => $timestamp,
-            'updated_at' => $timestamp,
-        ]);
-        
-        return response()->json([
-            'kode' => 200,
-            'pesan' => 'Berhasil ditambahkan!',
-        ]); 
+            $idStokBarang = DB::table('stok_barang')->insertGetId([
+                'nama_barang' => $nama_barang,
+                'harga_per_biji' => $harga_per_biji,
+                'harga_grosir' => $harga_grosir,
+                'kategori_barang' => $kategori_barang,
+                'qty_grosir' => $qty_grosir,
+                'stok' => $stok,
+                'keterangan' => $keterangan,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ]);
 
+            if($kategori == 'satuan_tidak_tetap') {
+                $insert = [];
+                foreach ($dynamicForm as $input) {
+                    $hargaSatuan = $input['tbhHargaSatuanDynamic'];
+                    $satuan = UpperFirstText($input['tbhSatuanDynamic']);
+                
+                    $insert[] = [
+                        'id_stok_barang' => $idStokBarang,
+                        'harga' => $hargaSatuan,
+                        'satuan' => $satuan,
+                        'created_at' => $timestamp,
+                        'updated_at' => $timestamp,
+                    ];
+                }
+
+                DB::table('list_satuan_tidak_tetap')->insert($insert);
+
+            }
+            
+            // Commit transaksi jika berhasil
+            DB::commit();
+            // 
+            return response()->json([
+                'kode' => 200,
+                'pesan' => 'Berhasil ditambahkan!',
+            ]); 
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi pengecualian
+            DB::rollback();
+
+            // Membaca pesan error dari pengecualian
+            $errorMessage = $e->getMessage();
+
+            // Mengirim pesan error sebagai respons HTTP 500
+            return response($errorMessage, 500);
+        }
+
+
+
+    }
+    private function UpperFirstText($text) {
+        $lowerText = strtolower($text);
+        $convertedText = ucwords($lowerText);
+        return $convertedText;
     }
 
     public function hapus_data_barang(Request $request)
@@ -118,7 +203,27 @@ class AdminController extends Controller
             return abort(500);
         }
 
-        DB::table('stok_barang')->where('id',$id)->delete();
+        // DB transaction 
+        try {
+            // Memulai transaksi database
+            DB::beginTransaction();
+            //  delete
+            DB::table('stok_barang')->where('id',$id)->delete();
+            DB::table('list_satuan_tidak_tetap')->where('id_stok_barang',$id)->delete();
+            // Commit transaksi jika berhasil
+            DB::commit();
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi pengecualian
+            DB::rollback();
+
+            // Membaca pesan error dari pengecualian
+            $errorMessage = $e->getMessage();
+
+            // Mengirim pesan error sebagai respons HTTP 500
+            return response($errorMessage, 500);
+        }
+        
         
         return response()->json([
             'kode' => 200,
