@@ -16,7 +16,8 @@ class AdminController extends Controller
     //
     public function kasir()
     {
-        return view('menu.kasir');
+        $list_barang = DB::table('stok_barang')->select('id','nama_barang')->get();
+        return view('menu.kasir',compact('list_barang'));
     }
     public function data_pembelian()
     {
@@ -337,6 +338,13 @@ class AdminController extends Controller
             return abort(500);
         }
 
+        $hitung = DB::table('list_satuan_tidak_tetap')->where('id',$id)->count();
+        if($hitung <= 1) {
+            return response()->json([
+                'kode' => 400,
+                'pesan' => 'Minimal harus ada 1 data!',
+            ]); 
+        }
         DB::table('list_satuan_tidak_tetap')->where('id',$id)->delete();
 
         return response()->json([

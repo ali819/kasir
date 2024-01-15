@@ -115,7 +115,7 @@
     <!-- --------------------------------------------------- -->
 </div>
 
-{{-- MODAL TAMBAH BARNAG --}}
+{{-- MODAL TAMBAH BARANG --}}
 <div class="modal fade" id="ModalTambahBarang" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -161,7 +161,7 @@
             </div>
           </div>
           <div class="modal-footer" style="margin-top:20px;">
-              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal&emsp;<i class="ti ti-x"></i></button>
+              <button type="button" class="btn btn-danger btnBatalTambahBarang" data-bs-dismiss="modal">Batal&emsp;<i class="ti ti-x"></i></button>
               <button type="submit" class="btn btn-primary font-medium btnKonfirmasiTambahBarang" disabled>Silahkan Pilih Kategori..</button>
           </div>
         </form>
@@ -407,7 +407,7 @@
               animasiProgressBar_run();
               tabel_stok.column(1).search($('#cariNamaBarang').val()).draw();
             }, 500);
-          });
+        });
           
         $('#cariStok').on('change', function() {
           animasiProgressBar_run();
@@ -498,6 +498,12 @@
           return;
         }
     });
+    $(document).on('click','.btnBatalTambahBarang', function() {
+      $('#FormTambahBarang')[0].reset();
+      $('#DataBarangDynamic').html('');
+      $('.btnKonfirmasiTambahBarang').attr('disabled',true);
+      $('.btnKonfirmasiTambahBarang').html('Silahkan Pilih Kategori..');
+    });
 
     // EDIT & UPDATE
     $(document).on('click','.btnEditStok', function() {
@@ -581,6 +587,8 @@
 
             } else if(response.kode == 201) {
               toastError(response.pesan);
+               // show modal
+               $('#ModalUpdateBarang1').modal('show');
             }
             
           }, error: function (error) {
@@ -669,8 +677,8 @@
         );
     });
     $(document).on('click','.btnHapusDataSatuan1', function () { 
-        var id_inputan = $(this).attr('data-id');
         var id_stok = $(this).attr('data-id-stok');
+        var id_inputan = $(this).attr('data-id');
         if(id_stok === '') {
           $('#'+id_inputan).remove();
           return;
@@ -689,7 +697,11 @@
             },
             dataType: "JSON",
             success: function (response) {
-              $('#'+id_inputan).remove();
+              if(response.kode == 200) {
+                $('#'+id_inputan).remove();
+              } else if(response.kode == 400) {
+                toastError(response.pesan);
+              }
             }, error: function (error) {
                 toastError("Oops! Silahkan coba lagi.");
             }, complete: function () {
@@ -722,6 +734,8 @@
                     toastSuccess(response.pesan);
                     // draw
                     $("#tabel_stok").DataTable().draw();
+                    // hidden
+                    $('#ModalUpdateBarang1').modal('hide');
                     
                   } else if(response.kode == 500) {
                     toastError(response.pesan);
