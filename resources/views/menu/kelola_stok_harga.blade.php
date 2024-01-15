@@ -191,6 +191,14 @@
                   </div>
                 </div>
               </div>
+              <div class="col-12" style="margin-top:10px;">
+                <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
+                  <div class="d-flex align-items-center font-medium me-3 me-md-0">
+                    <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
+                    Barang yang bisa dijual 'Eceran' & 'Grosir', stoknya dapat di pantau
+                  </div>
+                </div>
+              </div>
               <div class="row">
                 <div class="col-md-12">
                   {{--  --}}
@@ -217,6 +225,62 @@
           <div class="modal-footer">
               <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Batal&emsp;<i class="ti ti-x"></i></button>
               <button type="submit" class="btn btn-primary font-medium btnKonfirmasiUpdateBarang"><i class="ti ti-check"></i>&emsp;Perbarui</button>
+          </div>
+        </form>
+      </div>
+    </div>
+</div>
+
+{{-- MODAL UPDATE BARANG 1 --}}
+<div class="modal fade" id="ModalUpdateBarang1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header d-flex align-items-center">
+          <h4 class="modal-title" id="myLargeModalLabel">
+            <span id="updateTitleNamaBarang1">Perbarui Data Barang</span>
+          </h4>
+        </div>
+        <form id="FormUpdateBarang1" autocomplete="off">
+          @csrf
+          <div class="modal-body">
+            <div class="card-body">
+              <!--/row-->
+              <div class="col-12">
+                <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
+                  <div class="d-flex align-items-center font-medium me-3 me-md-0">
+                    <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
+                    Silahkan perbarui data barang
+                  </div>
+                </div>
+              </div>
+              <div class="col-12" style="margin-top:10px;">
+                <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
+                  <div class="d-flex align-items-center font-medium me-3 me-md-0">
+                    <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
+                    Setiap pembelian barang harus di timbang terlebih dahulu, stoknya tidak dapat di kalkulasi
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  {{--  --}}
+                  <input type="number" class="form-control" id="updateId1" name="updateId1" placeholder=".." required hidden>
+                  <label for="" class=""><b>Nama Barang</b></label>
+                  <input type="text" class="form-control" id="updateNamaBarang1" name="updateNamaBarang1" placeholder="Nama barang .." required>
+                  <button type="button" class="btn btn-primary btnTambahListSatuanTidakTetap" style="font-weight: bold; width:100%; margin-top:10px;"><i class="ti ti-pencil-plus"></i>&emsp;Tambah Satuan Baru</button>
+                  <div class="DynamicInputan">
+        
+                  </div>
+                  {{--  --}}
+                </div>
+                <!--/span-->
+              </div>
+              <!--/row-->
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-danger btnTutupModalUpdateBarang1" data-bs-dismiss="modal">Tutup&emsp;<i class="ti ti-x"></i></button>
+              <button type="submit" class="btn btn-primary font-medium btnKonfirmasiUpdateBarang1"><i class="ti ti-check"></i>&emsp;Perbarui</button>
           </div>
         </form>
       </div>
@@ -446,24 +510,96 @@
       var keterangan = ($(this).attr('data-keterangan') !== 'null') ? $(this).attr('data-keterangan') : '';
       var kategori_barang = $(this).attr('data-kategori-barang');
 
-      $('#updateId').val(id);
-      $('#updateTitleNamaBarang').html(namaBarang);
-      $('#updateNamaBarang').val(namaBarang);
-      $('#updateHargaPerBiji').val(hargaPerBiji);
-      $('#updateHargaGrosir').val(hargaGrosir);
-      $('#updateStok').val(stok);
-      $('#updateQtyGrosir').val(qtyGrosir);
-      $('#updateKeterangan').val(keterangan);
-
+      
       if(kategori_barang === 'satuan_tetap') {
+        $('#updateId').val(id);
+        $('#updateTitleNamaBarang').html(namaBarang);
+        $('#updateNamaBarang').val(namaBarang);
+        $('#updateHargaPerBiji').val(hargaPerBiji);
+        $('#updateHargaGrosir').val(hargaGrosir);
+        $('#updateStok').val(stok);
+        $('#updateQtyGrosir').val(qtyGrosir);
+        $('#updateKeterangan').val(keterangan);
+        // modal
         $('#ModalUpdateBarang').modal('show');
       } else if(kategori_barang === 'satuan_tidak_tetap') {
+        // 
+        $('#FormUpdateBarang1')[0].reset();
+        $('.DynamicInputan').html('');
+        // 
+        $('#updateId1').val(id);
+        $('#updateTitleNamaBarang1').html(namaBarang);
+        $('#updateNamaBarang1').val(namaBarang);
+        // 
+        $('.btnEditStok').attr('disabled',true);
+        // ambil data satuan
+        $.ajax({
+          type: "GET",
+          url: "{{ route('list_satuan_tidak_tetap') }}",
+          data: {
+            id: id,
+          },
+          dataType: "JSON",
+          success: function (response) {
+            
+            if(response.kode == 200) {
+
+              $('.DynamicInputan').append(
+                `
+                <div class="row">
+                    <div class="col-4" style="margin-top: 10px;">
+                      <label for=""><b>Satuan</b></label>
+                    </div>
+                    <div class="col-8" style="margin-top: 10px;">
+                      <label for=""><b>Harga Per-Satuan</b></label>
+                    </div>
+                </div>
+                `
+              );
+              response.list_satuan.forEach(function (item) {
+                hitungan ++;
+                $('.DynamicInputan').append(
+                    `
+                    <div class="row" id="DataSatuanDynamic${hitungan}">
+                        <div class="col-4">
+                            <input type="text" class="form-control custom-d capitalEachWord" name="dynamicUpdateInput[${hitungan}][UpdateSatuanDynamic1]" id="" value="${item.satuan}" placeholder="Kg, Gram, Pack, dll" required>
+                            <input type="text" class="form-control" name="dynamicUpdateInput[${hitungan}][UpdateSatuanId1]" id="" value="${item.id}" placeholder="ID.." required hidden>
+                        </div>
+                        <div class="col-6">
+                            <input type="number" class="form-control custom-d terbilang" name="dynamicUpdateInput[${hitungan}][UpdateHargaSatuanDynamic1]" id="dynamicUrutan${hitungan}" value="${item.harga}" placeholder="Rp ( 0 - 99999999 )" required>
+                        </div>
+                        <div class="col-2">
+                            <button type="button" class="btn btn-danger btnHapusDataSatuan1" data-id="DataSatuanDynamic${hitungan}" data-id-stok="${item.id}" style="margin-top:11px; float:right;"><i class="ti ti-trash"></i></button>
+                        </div>
+                    </div>
+                    `
+                );
+              });
+
+              // show modal
+              $('#ModalUpdateBarang1').modal('show');
+
+            } else if(response.kode == 201) {
+              toastError(response.pesan);
+            }
+            
+          }, error: function (error) {
+            
+            toastError("Oops! Silahkan coba lagi.");
+
+          }, complete: function () {
+            $('.btnEditStok').attr('disabled',false);
+          }
+          
+        });
+        
         
       } else {
 
       }
 
     });
+
     // BARANG SATUAN TETAP
     $('#FormUpdateBarang').on('submit', function(event) {
         event.preventDefault();
@@ -511,8 +647,111 @@
         var valueName = $(this).val();
         $('#updateTitleNamaBarang').html(valueName);
     });
-    // BARANG SATUAN TIDAK TETAP
 
+    // BARANG SATUAN TIDAK TETAP
+    $(document).on('click','.btnTambahListSatuanTidakTetap', function() {
+        hitungan ++;
+        $('.DynamicInputan').append(
+          `
+          <div class="row" id="DataSatuanDynamic${hitungan}">
+              <div class="col-4">
+                  <input type="text" class="form-control custom-d capitalEachWord" name="dynamicUpdateInput[${hitungan}][UpdateSatuanDynamic1]" id="" value="" placeholder="Kg, Gram, Pack, dll" required>
+                  <input type="text" class="form-control" name="dynamicUpdateInput[${hitungan}][UpdateSatuanId1]" id="" value="" placeholder="ID.." hidden>
+              </div>
+              <div class="col-6">
+                  <input type="number" class="form-control custom-d terbilang" name="dynamicUpdateInput[${hitungan}][UpdateHargaSatuanDynamic1]" id="dynamicUrutan${hitungan}" value="" placeholder="Rp ( 0 - 99999999 )" required>
+              </div>
+              <div class="col-2">
+                  <button type="button" class="btn btn-danger btnHapusDataSatuan1" data-id="DataSatuanDynamic${hitungan}" data-id-stok="" style="margin-top:11px; float:right;"><i class="ti ti-trash"></i></button>
+              </div>
+          </div>
+          `
+        );
+    });
+    $(document).on('click','.btnHapusDataSatuan1', function () { 
+        var id_inputan = $(this).attr('data-id');
+        var id_stok = $(this).attr('data-id-stok');
+        if(id_stok === '') {
+          $('#'+id_inputan).remove();
+          return;
+        }
+
+        if(confirm("Hapus data satuan? data yang sudah dihapus tidak bisa dikembalikan.")) {
+
+          $('.btnHapusDataSatuan1').attr('disabled',true);
+
+          $.ajax({
+            type: "DELETE",
+            url: "{{ route('hapus_data_satuan_list') }}",
+            data: {
+              _token: "{{ csrf_token() }}",
+              id: id_stok,
+            },
+            dataType: "JSON",
+            success: function (response) {
+              $('#'+id_inputan).remove();
+            }, error: function (error) {
+                toastError("Oops! Silahkan coba lagi.");
+            }, complete: function () {
+              $('.btnHapusDataSatuan1').attr('disabled',false);
+            }
+
+          });
+
+        } else {
+          return;
+        }
+
+    });
+    $('#FormUpdateBarang1').on('submit', function(event) {
+        event.preventDefault(event);
+        if(confirm("Perbarui data barang ini? pastikan data sudah benar.")) {
+              var data = $(this).serialize();
+              var btnValue = $('.btnKonfirmasiUpdateBarang1').html();
+              $('.btnKonfirmasiUpdateBarang1').html('Memproses ..');
+              $('.btnKonfirmasiUpdateBarang1').attr('disabled',true);
+               
+              $.ajax({
+                type: "POST",
+                url: "{{ route('update_barang1') }}",
+                data: data,
+                dataType: "JSON",
+                success: function (response) {
+                  if(response.kode == 200) {
+                    // toast
+                    toastSuccess(response.pesan);
+                    // draw
+                    $("#tabel_stok").DataTable().draw();
+                    
+                  } else if(response.kode == 500) {
+                    toastError(response.pesan);
+
+                  } else if(response.kode == 422) {
+
+                    errorHandlerToast(response.pesan);
+
+                  }
+                }, error: function (error) {
+
+                  toastError("Oops! Terjadi kesalahan.");
+                
+                }, complete: function () {
+                  $('.btnKonfirmasiUpdateBarang1').html(btnValue);
+                  $('.btnKonfirmasiUpdateBarang1').attr('disabled',false);
+                }
+              });
+        } else {
+          return;
+        }
+    });
+    $(document).on('click','.btnTutupModalUpdateBarang1', function() {
+        $('#FormUpdateBarang1')[0].reset();
+        $('.DynamicInputan').html('');
+    });
+    $(document).on('input','#updateNamaBarang1', function() {
+        var valueName = $(this).val();
+        $('#updateTitleNamaBarang1').html(valueName);
+    });
 
     // HAPUS
     $(document).on('click','.btnHapusStok', function() {
@@ -599,7 +838,7 @@
         <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
           <div class="d-flex align-items-center font-medium me-3 me-md-0">
             <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-            Satuan Tidak Tetap : setiap pembelian barang harus di timbang terlebih dahulu contohnya beras, gula, dll
+            Satuan Tidak Tetap : setiap pembelian barang harus di timbang terlebih dahulu contohnya beras, gula, telur dll
           </div>
         </div>
       </div>
@@ -646,6 +885,9 @@
     // DYNAMIC INPUTAN
     let hitungan = 1;
     $(document).on('click','.btnTambahDataSatuan', function() {
+      
+        hitungan ++;
+
         $('.DynamicInputan').append(
           `
             <div class="row" id="DataSatuanDynamic${hitungan}">
@@ -661,9 +903,6 @@
             </div>
           `
         );
-
-        hitungan ++;
-
     });
     $(document).on('click','.btnHapusDataSatuan', function () { 
         var id_inputan = $(this).attr('data-id');

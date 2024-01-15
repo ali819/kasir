@@ -153,12 +153,12 @@ class AdminController extends Controller
                 $insert = [];
                 foreach ($dynamicForm as $input) {
                     $hargaSatuan = $input['tbhHargaSatuanDynamic'];
-                    $satuan = UpperFirstText($input['tbhSatuanDynamic']);
+                    $satuan = strtolower($input['tbhSatuanDynamic']);
                 
                     $insert[] = [
                         'id_stok_barang' => $idStokBarang,
                         'harga' => $hargaSatuan,
-                        'satuan' => $satuan,
+                        'satuan' => ucwords($satuan),
                         'created_at' => $timestamp,
                         'updated_at' => $timestamp,
                     ];
@@ -303,6 +303,144 @@ class AdminController extends Controller
             'kode' => 200,
             'pesan' => 'Berhasil diperbarui!',
         ]); 
+    }
+
+    public function list_satuan_tidak_tetap(Request $request)
+    {
+        $id = $request->id;
+        if($id == null) {
+            return abort(404);
+        }
+
+        $list_satuan = DB::table('list_satuan_tidak_tetap')->where('id_stok_barang',$id)->get();
+        if($list_satuan->count() < 1) {
+
+            return response()->json([
+                'kode' => 201,
+                'list_satuan' => $list_satuan,
+                'pesan' => 'Data satuan belum di tetapkan!',
+            ]); 
+
+        }
+
+        return response()->json([
+            'kode' => 200,
+            'list_satuan' => $list_satuan,
+            'pesan' => 'Memuat data satuan',
+        ]); 
+    }
+
+    public function hapus_data_satuan_list(Request $request)
+    {
+        $id = $request->id;
+        if($id == null) {
+            return abort(500);
+        }
+
+        DB::table('list_satuan_tidak_tetap')->where('id',$id)->delete();
+
+        return response()->json([
+            'kode' => 200,
+            'pesan' => 'Berhasil dihapus !',
+        ]); 
+    }
+
+    // update barang satuan tidak tetap
+    public function update_barang1(Request $request)
+    {
+        $messages = [
+            'updateId1.required' => 'ID tidak boleh kosong!',
+            'updateNamaBarang1.required' => 'Nama barang tidak boleh kosong!',
+            'dynamicUpdateInput.*.UpdateSatuanDynamic1.required' => 'Satuan tidak boleh kosong!',
+            'dynamicUpdateInput.*.UpdateHargaSatuanDynamic1.required' => 'Harga satuan tidak boleh kosong!',
+            'dynamicUpdateInput.*.UpdateHargaSatuanDynamic1.numeric' => 'Harga satuan harus angka!',
+
+        ];
+        $validator = Validator::make($request->all(), [
+            'updateId1' => ['required'],
+            'updateNamaBarang1' => ['required'],
+            'dynamicUpdateInput.*.UpdateSatuanDynamic1' => ['required'],
+            'dynamicUpdateInput.*.UpdateHargaSatuanDynamic1' => ['required','numeric'],
+
+        ], $messages);
+        // Respon jika validasi gagal
+        if ($validator->fails()) {
+
+            return response()->json([
+                'kode' => 422,
+                'pesan' => $validator->errors(),
+            ]); 
+            
+        }
+
+        // jika berhasil
+        $id = $request->updateId1;
+        $nama_barang = $request->updateNamaBarang1;
+        $dynamicUpdateInput = $request->input('dynamicUpdateInput');
+        $timestamp = Carbon::now();
+
+        // DB transaction 
+        try {
+            // Memulai transaksi database
+            DB::beginTransaction();
+
+            // update stok_barang
+            $check = DB::table('stok_barang')->where('nama_barang', $nama_barang)->whereNotIn('id', [$id])->first();
+            if($check) {
+                return response()->json([
+                    'kode' => 500,
+                    'pesan' => 'Nama barang sudah ada!',
+                ]); 
+            }
+            DB::table('stok_barang')->where('id',$id)->update([
+                'nama_barang' => $nama_barang,
+                'updated_at' => $timestamp,
+            ]);
+
+            // update list_satuan_tidak_tetap
+            foreach($dynamicUpdateInput as $input) {
+
+                $id_satuan = $input['UpdateSatuanId1'];
+                $satuan = strtolower($input['UpdateSatuanDynamic1']);
+                $harga = $input['UpdateHargaSatuanDynamic1'];
+                if($id_satuan) {
+                    DB::table('list_satuan_tidak_tetap')->where('id',$id_satuan)->update([
+                        'harga' => $harga,
+                        'satuan' => ucwords($satuan),
+                        'updated_at' => $timestamp,
+                    ]);
+                } else {
+                    DB::table('list_satuan_tidak_tetap')->insert([
+                        'id_stok_barang' => $id,
+                        'harga' => $harga,
+                        'satuan' => ucwords($satuan),
+                        'created_at' => $timestamp,
+                        'updated_at' => $timestamp,
+                    ]);
+                }
+
+            }
+
+            // Commit transaksi jika berhasil
+            DB::commit();
+
+            return response()->json([
+                'kode' => 200,
+                'pesan' => 'Berhasil diperbarui!',
+            ]); 
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi pengecualian
+            DB::rollback();
+
+            // Membaca pesan error dari pengecualian
+            $errorMessage = $e->getMessage();
+
+            // Mengirim pesan error sebagai respons HTTP 500
+            return response($errorMessage, 500);
+        }
+
+
     }
 
 }

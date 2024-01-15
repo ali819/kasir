@@ -44,7 +44,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/stok/tambah-barang-baru', [AdminController::class, 'tambah_barang_baru'])->name('tambah_barang_baru');
     Route::delete('/stok/hapus-barang', [AdminController::class, 'hapus_data_barang'])->name('hapus_data_barang');
     Route::post('/stok/update-barang', [AdminController::class, 'update_barang'])->name('update_barang');
-
+    
+    Route::get('/stok/data-list-satuan-tidak-tetap', [AdminController::class, 'list_satuan_tidak_tetap'])->name('list_satuan_tidak_tetap');
+    Route::delete('/stok/hapus-data-satuan-list', [AdminController::class, 'hapus_data_satuan_list'])->name('hapus_data_satuan_list');
+    Route::post('/stok/update-barang-1', [AdminController::class, 'update_barang1'])->name('update_barang1');
     
 
 });
