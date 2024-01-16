@@ -34,7 +34,8 @@
             </div>
             <div class="row align-items-center">
               <div class="col-lg-8 col-md-8">
-                <div id="chart"></div>
+                {{-- <h5>Zoomable Line Chart</h5> --}}
+                <div id="chart-line-zoomable"></div>
               </div>
               <div class="col-lg-4 col-md-4">
                 <div class="d-flex align-items-center mb-4 pb-1">
@@ -76,6 +77,7 @@
 
 {{-- GRAFIK --}}
 <script src="{{ asset('template/dist/libs/apexcharts/dist/apexcharts.min.js') }}"></script>
+<script src="{{ asset('template/dist/js/apex-chart/apex.line.init.js') }}"></script>
 <script src="{{ asset('template/dist/js/dashboard.js') }}"></script>
 
 

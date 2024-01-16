@@ -154,12 +154,12 @@ class AdminController extends Controller
                 $insert = [];
                 foreach ($dynamicForm as $input) {
                     $hargaSatuan = $input['tbhHargaSatuanDynamic'];
-                    $satuan = strtolower($input['tbhSatuanDynamic']);
+                    $satuan = $this->UpperFirstText($input['tbhSatuanDynamic']);
                 
                     $insert[] = [
                         'id_stok_barang' => $idStokBarang,
                         'harga' => $hargaSatuan,
-                        'satuan' => ucwords($satuan),
+                        'satuan' => $satuan,
                         'created_at' => $timestamp,
                         'updated_at' => $timestamp,
                     ];
@@ -409,19 +409,19 @@ class AdminController extends Controller
             foreach($dynamicUpdateInput as $input) {
 
                 $id_satuan = $input['UpdateSatuanId1'];
-                $satuan = strtolower($input['UpdateSatuanDynamic1']);
+                $satuan = $this->UpperFirstText($input['UpdateSatuanDynamic1']);
                 $harga = $input['UpdateHargaSatuanDynamic1'];
                 if($id_satuan) {
                     DB::table('list_satuan_tidak_tetap')->where('id',$id_satuan)->update([
                         'harga' => $harga,
-                        'satuan' => ucwords($satuan),
+                        'satuan' => $satuan,
                         'updated_at' => $timestamp,
                     ]);
                 } else {
                     DB::table('list_satuan_tidak_tetap')->insert([
                         'id_stok_barang' => $id,
                         'harga' => $harga,
-                        'satuan' => ucwords($satuan),
+                        'satuan' => $satuan,
                         'created_at' => $timestamp,
                         'updated_at' => $timestamp,
                     ]);

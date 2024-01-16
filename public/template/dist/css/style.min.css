@@ -22328,7 +22328,8 @@ textarea.form-control-lg {
     display: flex;
     flex-wrap: wrap;
     align-items: stretch;
-    width: 100%
+    width: 100%;
+    flex-wrap: nowrap;
 }
 
 .input-group>.form-control,
