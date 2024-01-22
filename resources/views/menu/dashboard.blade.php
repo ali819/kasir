@@ -15,7 +15,7 @@
                 <p class="card-subtitle mb-0">Review Profit</p>
               </div>
               <div>
-                <select class="form-select">
+                {{-- <select class="form-select">
                   @php
                       $currentDate = now();
                       $monthsAhead = 6;
@@ -29,7 +29,8 @@
                         {{ $date->isoFormat('MMMM YYYY') }}
                       </option>
                   @endfor
-                </select>
+                </select> --}}
+                <input type="month" class="form-control">
               </div>
             </div>
             <div class="row align-items-center">
@@ -44,22 +45,22 @@
                   </div>
                   <div>
                     <h4 class="mb-0 fs-7 fw-semibold">Rp 0</h4>
-                    <p class="fs-3 mb-0">Total Pendapatan</p>
+                    <p class="fs-3 mb-0">Total Penjualan</p>
                   </div>
                 </div>
                 <div>
                   <div class="d-flex align-items-baseline mb-4">
                     <span class="round-8 bg-primary rounded-circle me-6"></span>
                     <div>
-                      <p class="fs-3 mb-1">Pendapatan Bulan Ini</p>
-                      <h6 class="fs-5 fw-semibold mb-0">Rp 0</h6>
+                      <p class="fs-3 mb-1">Total Transaksi</p>
+                      <h6 class="fs-5 fw-semibold mb-0">0</h6>
                     </div>
                   </div>
                   <div class="d-flex align-items-baseline mb-4 pb-1">
                     <span class="round-8 bg-secondary rounded-circle me-6"></span>
                     <div>
-                      <p class="fs-3 mb-1">Pengeluaran Bulan Ini</p>
-                      <h6 class="fs-5 fw-semibold mb-0">Rp 0</h6>
+                      <p class="fs-3 mb-1">Total Barang Terjual</p>
+                      <h6 class="fs-5 fw-semibold mb-0">0</h6>
                     </div>
                   </div>
                   <div>

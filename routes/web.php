@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/stok/hapus-data-satuan-list', [AdminController::class, 'hapus_data_satuan_list'])->name('hapus_data_satuan_list');
     Route::post('/stok/update-barang-1', [AdminController::class, 'update_barang1'])->name('update_barang1');
     
+    Route::get('/kasir/detail-data-barang', [AdminController::class, 'detail_data_barang'])->name('detail_data_barang');
 
 });
 

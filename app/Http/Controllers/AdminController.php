@@ -451,4 +451,58 @@ class AdminController extends Controller
 
     }
 
+
+    public function detail_data_barang(Request $request)
+    {
+
+        $id = $request->id;
+        if($id == null) {
+            return response()->json([
+                'kode' => 404,
+                'pesan' => 'ID barang tidak boleh kosong!',
+            ]);
+        }
+
+        $barang = DB::table('stok_barang')->where('id',$id)->first();
+        if(!$barang) {
+            return response()->json([
+                'kode' => 404,
+                'pesan' => 'ID barang tidak ditemukan!',
+            ]);
+        } 
+        // check kategorinya
+        $kategori_barang = $barang->kategori_barang;
+        $nama_barang = $barang->nama_barang;
+
+        if($kategori_barang == 'satuan_tetap') {
+            
+            $detail_barang = $barang;
+            
+        } else if($kategori_barang == 'satuan_tidak_tetap') {
+            
+            $data_barang = DB::table('list_satuan_tidak_tetap')->where('id_stok_barang',$id)->get();
+            if($data_barang->count() < 1) {
+                return response()->json([
+                    'kode' => 404,
+                    'pesan' => 'Satuan barang belum di tambahkan!',
+                ]);
+            }
+
+            $detail_barang = $data_barang;
+
+        } else {
+            return response()->json([
+                'kode' => 404,
+                'pesan' => 'Satuan barang tidak ditentukan!',
+            ]);
+        }
+
+        return response()->json([
+            'kode' => 200,
+            'kategori_barang' => $kategori_barang,
+            'detail_barang' => $detail_barang,
+            'nama_barang' => $nama_barang,
+        ]);
+    }
+
 }

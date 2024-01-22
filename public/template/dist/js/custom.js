@@ -57,6 +57,16 @@ $(function () {
   });
 });
 
+$(document).on("click", ".minus,.add", function() {
+  var $qty = $(this).closest("div").find(".qty"),
+    currentVal = parseInt($qty.val()),
+    isAdd = $(this).hasClass("add");
+  !isNaN(currentVal) &&
+    $qty.val(
+      isAdd ? ++currentVal : currentVal > 0 ? --currentVal : currentVal
+    );
+});
+
 /*change layout boxed/full */
 $(".full-width").click(function () {
   $(".container-fluid").addClass("mw-100");

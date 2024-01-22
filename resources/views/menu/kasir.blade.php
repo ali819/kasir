@@ -94,7 +94,9 @@
                     <br>
                 </div>
                 {{-- HTML NOTA --}}
-                <div class="row" id="html_print"></div>
+                <div class="row" id="html_print">
+
+                </div>
                 {{--  --}}
                 <section id="steps-uid-0-p-0" role="tabpanel" aria-labelledby="steps-uid-0-h-0" class="body current" aria-hidden="false" style="">
                     <div class="table-responsive">
@@ -106,30 +108,14 @@
                               <th class="text-end">#&nbsp;Harga</th>
                             </tr>
                           </thead>
-                          <tbody>
-                            {{-- <tr>
-                                <td colspan="3" class="text-danger text-center fs-5">List barang kosong :(</td>
-                            </tr> --}}
-                            <tr>                          
-                              <td class="border-bottom-0">
-                                <div class="d-flex align-items-center gap-3">
-                                  <div>
-                                    <h6 class="fw-semibold fs-4 mb-0">1. Susu bubuk merk FrisionFlag 300ml</h6>
-                                    <p class="mb-0">( Eceran )</p>
-                                    <a href="javascript:void(0)" class="text-danger fs-4"><i class="ti ti-trash"></i></a>
-                                  </div>
-                                </div>
-                              </td>
-                              <td class="border-bottom-0">
-                                <div class="input-group input-group-sm rounded">
-                                  <button class="btn minus min-width-40 py-0 border-end border-dark border-end-0 text-dark" type="button" id="add1"><i class="ti ti-minus"></i></button>
-                                  <input type="text" class="min-width-40 flex-grow-0 border border-dark text-dark fs-3 fw-semibold form-control text-center qty" placeholder="" aria-label="Example text with button addon" aria-describedby="add1" value="1">
-                                  <button class="btn min-width-40 py-0 border border-dark border-start-0 text-dark add" type="button" id="addo2"><i class="ti ti-plus"></i></button>
-                                </div>
-                              </td>
-                              <td class="text-end border-bottom-0"><h6 class="fs-4 fw-semibold mb-0">Rp 50.000</h6></td>
-                            </tr>
-                          </tbody>
+                          <form id="formTabelBelanja" autocomplete="off">
+                            @csrf
+                              <tbody id="tabelListBelanja">
+                                <tr class="listBelanjaanKosong">
+                                    <td colspan="3" class="text-danger text-center fs-5">List barang kosong :(</td>
+                                </tr>
+                              </tbody>
+                          </form>
                         </table>
                       </div>
                     <div class="order-summary border rounded p-4 my-4">
@@ -177,7 +163,7 @@
     </div>
 
     {{-- MODAL TAMBAH KE LIST --}}
-    <div class="modal fade" id="ModalTambahKeList" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+    <div class="modal fade" id="ModalTambahKeList" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="" style="display: none;" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header d-flex align-items-center">
@@ -201,17 +187,14 @@
                   <div class="row">
                     <div class="col-md-12">
                         {{--  --}}
-                        <label for="" class=""><b>Jumlah Beli ( Qty )</b></label>
-                        <input type="number" class="form-control" id="" name="" placeholder="1 - 99999" required>
-                        </br>
-                        <input type="radio" class="btn-check" name="options" id="option1" autocomplete="off" />
-                        <label class="btn btn-outline-primary rounded-pill font-medium me-2 mb-2" for="option1">Ecer - Rp 10.000</label>
-                        <input type="radio" class="btn-check" name="options" id="option2" autocomplete="off" />
-                        <label class="btn btn-outline-primary rounded-pill font-medium me-2 mb-2" for="option2">Grosir - Rp 65.000</label>
+                        <div id="DataDetailBarang">
+                           
+                            
+                        </div>
                         <br>
                         <label for="" class="" style="margin-top:10px;"><b>Total ( Rp )</b></label>
-                        <h2 class="text-center" style="margin-top:5px; color:#606060; font-weight:bold;">Rp 0</h2>
-                        <h5 class="text-center" style="color:#606060;">" Terbilang "</h5>
+                        <h2 class="text-center hitunganTotalRp" style="margin-top:5px; color:#606060; font-weight:bold;">Rp 0</h2>
+                        <h5 class="text-center hitunganTotalTerbilang" style="color:#606060;">" Terbilang "</h5>
                     </div>
                   </div>
                   <!--/row-->
@@ -228,14 +211,7 @@
 
     <script>
 
-        // let cariNamaBarang = null;
-        // $(document).on('input','#cariNamaBarang', function() {
-        //     clearTimeout(cariNamaBarang);
-        //     cariNamaBarang = setTimeout( function() {
-        //       animasiProgressBar_run();
-        //     }, 500);
-        // });
-
+        // LEMPAR KE MODAL (DETAIL BARANG)
         $('#FormListbarang').on('submit',function(event) {
             event.preventDefault();
             var value = $('#cariNamaBarang').val().toLowerCase();
@@ -243,14 +219,228 @@
             if (selectedOption.length > 0) {
                 var id = selectedOption.data("id");
                 var nama_barang = selectedOption.val();
-                toastSuccess(nama_barang);
-                // setting ke modal
-                $('#tambahListNamaBarang').html(nama_barang);
-                $('#ModalTambahKeList').modal('show');
+                // atur button
+                var btnValue = $('.btnTambahBarang').html();
+                $('.btnTambahBarang').attr('disabled',true);
+                $('.btnTambahBarang').html('Memuat..');
+                // ajax
+                $.ajax({
+                    type: "GET",
+                    url: "{{ route('detail_data_barang') }}",
+                    data: {
+                        id: id,
+                    },
+                    dataType: "JSON",
+                    success: function (response) {
+
+                        if(response.kode == 200) {
+                            drawFormListBarang(response.kategori_barang, response.detail_barang, response.nama_barang);
+                        } else if(response.kode == 404) {
+                            toastError(response.pesan);
+                        } else {
+                            toastError("Oops! Terjadi kesalahan saat mengambil data!");
+                        }
+                        
+                    }, error: function (error) {
+                        toastError("Oops! Silahkan coba lagi!");
+                    }, complete: function () {
+                        $('.btnTambahBarang').attr('disabled',false);
+                        $('.btnTambahBarang').html(btnValue);
+                    }
+                });
 
             } else {
                 toastError("Barang '"+value+"' tidak ditemukan!");
             }
+        });
+        function drawFormListBarang(kategori_barang, detail_barang, nama_barang) {
+            // atur text
+            $('.hitunganTotalRp').html('Rp 0');
+            $('.hitunganTotalTerbilang').html('Terbilang');            
+
+            if(kategori_barang === 'satuan_tidak_tetap') {
+                
+                var dataHTML = 
+                `
+                    <label for="" class=""><b>Jumlah Pembelian ( Per-Satuan )</b></label>
+                    <input type="number" class="form-control hitunganDataQty" id="detailJumlahQty" name="detailJumlahQty" placeholder="Qty .." value="1" step="0.01" required>
+                    </br>
+                `;
+
+                // each get dari controller 
+                detail_barang.forEach(function(item) {
+                    // Buat elemen HTML untuk setiap item
+                    var harga = item.harga;
+                    var satuan = item.satuan;
+
+                    dataHTML += `
+                        <input type="radio" class="btn-check hitunganDataHarga" name="detailSatuan" id="detailSatuan${satuan}" data-satuan="${satuan}" data-harga="${harga}" autocomplete="off" />
+                        <label class="btn btn-outline-primary rounded-pill font-medium me-2 mb-2" for="detailSatuan${satuan}"><b>${satuan}</b> - ${formatRupiah(harga)}</label>
+                    `;
+                });
+
+                $('#DataDetailBarang').html(dataHTML);
+
+                // setting ke modal
+                $('#cariNamaBarang').val('');
+                toastSuccess(nama_barang);
+                $('#tambahListNamaBarang').html(nama_barang);
+                $('#ModalTambahKeList').modal('show');
+            } else if(kategori_barang === 'satuan_tetap') {
+                // atur value nya
+                var eceran = detail_barang.harga_per_biji;
+                var grosir = detail_barang.harga_grosir;
+                var dataHTML = 
+                `
+                    <label for="" class=""><b>Jumlah Beli ( Qty )</b></label>
+                    <input type="number" class="form-control hitunganDataQty" id="detailJumlahQty" name="detailJumlahQty" placeholder="1 - 99999" required>
+                    </br>
+                    <input type="radio" class="btn-check hitunganDataHarga" name="detailSatuan" id="detailSatuanEcer" data-satuan="Eceran" data-harga="${eceran}" autocomplete="off" />
+                    <label class="btn btn-outline-primary rounded-pill font-medium me-2 mb-2" for="detailSatuanEcer"><b>Ecer</b> - ${formatRupiah(eceran)}</label>
+                    <input type="radio" class="btn-check hitunganDataHarga" name="detailSatuan" id="detailSatuanGrosir" data-satuan="Grosir" data-harga="${grosir}" autocomplete="off" />
+                    <label class="btn btn-outline-primary rounded-pill font-medium me-2 mb-2" for="detailSatuanGrosir"><b>Grosir</b> - ${formatRupiah(grosir)}</label>
+                `;
+                $('#DataDetailBarang').html(dataHTML);
+
+                // setting ke modal
+                $('#cariNamaBarang').val('');
+                toastSuccess(nama_barang);
+                $('#tambahListNamaBarang').html(nama_barang);
+                $('#ModalTambahKeList').modal('show');
+            } else {
+                toastError("Oops! Kategori barang tidak ditemukan!");
+            }
+        }
+
+        // TOTAL BELANJA & TERBILANG (HITUNGAN PADA MODAL)
+        function hitunganTotalBelanja() {
+            var qty = $('.hitunganDataQty').val();
+            var harga = $('.hitunganDataHarga:checked').attr('data-harga');
+            harga = (harga === '') ? 0 : harga;
+            qty = (qty === '') ? 0 : qty;
+
+            var TotalBelanja = qty * harga;
+            var Rp = formatRupiah(TotalBelanja);
+            var Terbilang = angkaTerbilang(TotalBelanja);
+            
+            $('.hitunganTotalRp').html(Rp);
+            $('.hitunganTotalTerbilang').html(Terbilang);
+
+            console.log('QTY : '+qty+' | HARGA : '+Rp+' | TERBILANG : '+Terbilang);
+
+        }
+        $(document).on('input','.hitunganDataQty', function() {
+            hitunganTotalBelanja();
+        });
+        $(document).on('click','.hitunganDataHarga', function() {
+            hitunganTotalBelanja();
+        });
+
+        // TAMBAH KE LIST BELANJA
+        $('#FormTambahListBarang').on('submit', function(e) {
+            e.preventDefault();
+            var nama_barang = $('#tambahListNamaBarang').html();
+            var satuan = $('.hitunganDataHarga:checked').attr('data-satuan');
+            var harga = $('.hitunganDataHarga:checked').attr('data-harga');
+            var total_qty = $('.hitunganDataQty').val();
+            var total_harga = total_qty * harga;
+            if(nama_barang === '') {
+                toastError("Nama barang kosong!");
+                return;
+            }
+            if(satuan === '') {
+                toastError("Satuan barang kosong!");
+                return;
+            }
+            if(harga === '') {
+                toastError("Harga barang kosong!");
+                return;
+            }
+            if(total_qty === '' || total_qty <= 0) {
+                toastError("Perhitungan total harga kosong!");
+                return;
+            }
+
+            drawTabelListBelanja(nama_barang, satuan, total_qty, total_harga, harga);
+
+
+        });
+        function drawTabelListBelanja(nama_barang, satuan, total_qty, total_harga, harga) {
+            $('.listBelanjaanKosong').remove();
+            var urutan = $('.nomorBelanjaan').length;
+            urutan++;
+            if(urutan <= 0) { urutan = 1; }
+            var rp = formatRupiah(total_harga);
+            var tabelBelanja = $('#tabelListBelanja');
+            var dataHTML = 
+            `
+                <tr class="nomorBelanjaan ListUrutanBarang${urutan}">                          
+                  <td class="border-bottom-0">
+                    <div class="d-flex align-items-center gap-3">
+                      <div>
+                        <h6 class="fw-semibold fs-4 mb-0 ">${urutan}. ${nama_barang}</h6>
+                        <p class="mb-0">( ${satuan} )</p>
+                        <a href="javascript:void(0)" class="text-danger fs-4 btnHapusListBarang" data-urutan="${urutan}"><i class="ti ti-trash"></i></a>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="border-bottom-0">
+                    <div class="input-group input-group-sm rounded">
+                      <button class="btn minus min-width-40 py-0 border-end border-dark border-end-0 text-dark btnChangeQty" data-urutan="${urutan}" type="button" id="add${urutan}"><i class="ti ti-minus"></i></button>
+                      <input type="text" class="min-width-40 flex-grow-0 border border-dark text-dark fs-3 fw-semibold form-control text-center qty tabelBelanjaQty numberDataQty${urutan}" data-urutan="${urutan}" placeholder="" aria-label="" aria-describedby="" value="${total_qty}" step="0.01">
+                      <button class="btn min-width-40 py-0 border border-dark border-start-0 text-dark add  btnChangeQty" data-urutan="${urutan}" type="button" id="addo${urutan}"><i class="ti ti-plus"></i></button>
+                    </div>
+                  </td>
+                  <td class="text-end border-bottom-0"><h6 class="fs-4 fw-semibold mb-0 tabelBelanjaRp numberDataRp${urutan}">${rp}</h6></td>
+                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][nama_barang]" value="${nama_barang}">
+                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][satuan]" value="${satuan}">
+                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][total_qty]" value="${total_qty}">
+                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][total_harga]" value="${total_harga}">
+                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][harga]" value="${harga}">
+                </tr>
+            `;
+            tabelBelanja.append(dataHTML);
+            // atur modal
+            $('#ModalTambahKeList').modal('hide');
+        }
+
+        // ON CHANGE TABEL LIST BELANJAAN
+
+        let timeQty = null;
+        $(document).on('click','.btnChangeQty', function() {
+            clearTimeout(timeQty);
+            var urutan = $(this).attr('data-urutan');
+            timeQty = setTimeout( function() {
+                changeListBelanjaan(urutan);
+            }, 500);
+        });
+        $(document).on('input','.tabelBelanjaQty', function() {
+            var urutan = $(this).attr('data-urutan');
+            changeListBelanjaan(urutan);
+        });
+        function changeListBelanjaan(urutan) {
+            // Membuat nama atribut dengan format dinamis
+            var namaAtributHarga = `dynamicTabelBelanja[${urutan}][harga]`;
+            var namaAtributTotalHarga = `dynamicTabelBelanja[${urutan}][total_harga]`;
+            var namaAtributTotalQty = `dynamicTabelBelanja[${urutan}][total_qty]`;
+            // hitungan
+            var harga = $('[name="' + namaAtributHarga + '"]').val();
+            var qty = $('.numberDataQty'+urutan).val();
+            if(qty === '') { qty = 0; }
+            var total_hitungan = harga * qty;
+            var rp = formatRupiah(total_hitungan);
+            // ubah 
+            $('.numberDataRp'+urutan).html(rp);
+            $('[name="' + namaAtributTotalQty + '"]').val(qty);
+            $('[name="' + namaAtributTotalHarga + '"]').val(total_hitungan);
+
+            console.log('TOTAL QTY : '+qty+' | TOTAL HARGA : '+rp);
+        }
+
+        // HAPUS LIST ITEM TABEL
+        $(document).on('click','.btnHapusListBarang', function() {
+            var urutan = $(this).attr('data-urutan');
+            $('.ListUrutanBarang'+urutan).remove();
         });
 
         // PRINT RAWBT ( https://www.rawbt.ru/start.html )
@@ -332,6 +522,64 @@
         }
         function animasiProgressBar_stop() {
             $('.animasiProgressBar').css('width', '0%');
+        }
+
+        // FORMAT PENULISAN
+        function formatRupiah(angka) {
+            angka = Math.floor(angka); // Menghilangkan angka desimal
+            const reverse = angka.toString().split('').reverse().join('');
+            let ribuan = reverse.match(/\d{1,3}/g);
+            ribuan = ribuan.join('.').split('').reverse().join('');
+            return 'Rp ' + ribuan;
+        }
+
+        function angkaTerbilang(nilai) {
+            // deklarasi variabel nilai sebagai angka matemarika
+            // Objek Math bertujuan agar kita bisa melakukan tugas matemarika dengan javascript
+            nilai = Math.floor(Math.abs(nilai));
+            
+            // deklarasi nama angka dalam bahasa indonesia
+            var huruf = [ '', 'Satu', 'Dua', 'Tiga', 'Empat', 'Lima', 'Enam', 'Tujuh', 'Delapan', 'Sembilan', 'Sepuluh', 'Sebelas', ];
+            
+            // menyimpan nilai default untuk pembagian
+            var bagi = 0;
+            // deklarasi variabel penyimpanan untuk menyimpan proses rumus 
+            var penyimpanan = '';
+            
+            // rumus 
+            if (nilai < 12) {
+            penyimpanan = ' ' + huruf[nilai];
+            } else if (nilai < 20) {
+            penyimpanan = angkaTerbilang(Math.floor(nilai - 10)) + ' Belas';
+            } else if (nilai < 100) {
+            bagi = Math.floor(nilai / 10);
+            penyimpanan = angkaTerbilang(bagi) + ' Puluh' + angkaTerbilang(nilai % 10);
+            } else if (nilai < 200) {
+            penyimpanan = ' Seratus' + angkaTerbilang(nilai - 100);
+            } else if (nilai < 1000) {
+            bagi = Math.floor(nilai / 100);
+            penyimpanan = angkaTerbilang(bagi) + ' Ratus' + angkaTerbilang(nilai % 100);
+            } else if (nilai < 2000) {
+            penyimpanan = ' Seribu' + angkaTerbilang(nilai - 1000);
+            } else if (nilai < 1000000) {
+            bagi = Math.floor(nilai / 1000);
+            penyimpanan = angkaTerbilang(bagi) + ' Ribu' + angkaTerbilang(nilai % 1000);
+            } else if (nilai < 1000000000) {
+            bagi = Math.floor(nilai / 1000000);
+            penyimpanan = angkaTerbilang(bagi) + ' Juta' + angkaTerbilang(nilai % 1000000);
+            } else if (nilai < 1000000000000) {
+            bagi = Math.floor(nilai / 1000000000);
+            penyimpanan = angkaTerbilang(bagi) + ' Miliar' + angkaTerbilang(nilai % 1000000000);
+            } else if (nilai < 1000000000000000) {
+            bagi = Math.floor(nilai / 1000000000000);
+            penyimpanan = angkaTerbilang(nilai / 1000000000000) + ' Triliun' + angkaTerbilang(nilai % 1000000000000);
+            } else {
+            penyimpanan = 'Nominal Angka Terlalu Banyak !';
+            }
+        
+            // mengambalikan nilai yang ada dalam variabel penyimpanan
+            return penyimpanan;
+
         }
     </script>
 
