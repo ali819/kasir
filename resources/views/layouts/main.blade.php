@@ -23,8 +23,8 @@
 	  <link rel="stylesheet" type="text/css" href="{{ asset('template/toastify/toastify.min.css') }}">
 	  <script type="text/javascript" src="{{ asset('template/toastify/toastify.min.js') }}"></script>
     {{-- Sweetalert --}}
-	  {{-- <link rel="stylesheet" type="text/css" href="{{ asset('template/sweetalert/sweetalert2.min.css') }}"> --}}
-	  {{-- <script type="text/javascript" src="{{ asset('template/sweetalert/sweetalert2.all.min.js') }}"></script> --}}
+	  <link rel="stylesheet" type="text/css" href="{{ asset('template/sweetalert/sweetalert2.min.css') }}">
+	  <script type="text/javascript" src="{{ asset('template/sweetalert/sweetalert2.all.min.js') }}"></script>
     <!-- Datatable -->
     <link rel="stylesheet" href="{{ asset('template/dist/libs/datatables.net-bs5/css/dataTables.bootstrap5.min.css') }}">
   </head>
@@ -277,22 +277,22 @@
               });
           });
         }
-        // function customConfirm(title, message) {
-        //     return new Promise((resolve) => {
-        //         Swal.fire({
-        //             title: title,
-        //             text: message,
-        //             icon: "warning",
-        //             showCancelButton: true,
-        //             confirmButtonColor: "#3085d6",
-        //             cancelButtonColor: "#d33",
-        //             confirmButtonText: "Ya, lanjutkan",
-        //             cancelButtonText: "Batal"
-        //         }).then((result) => {
-        //             resolve(result.isConfirmed);
-        //         });
-        //     });
-        // }
+        function customConfirm(title, message) {
+            return new Promise((resolve) => {
+                Swal.fire({
+                    title: title,
+                    text: message,
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Ya, lanjutkan",
+                    cancelButtonText: "Batal"
+                }).then((result) => {
+                    resolve(result.isConfirmed);
+                });
+            });
+        }
     </script>
   </body>
 

@@ -108,30 +108,30 @@
                               <th class="text-end">#&nbsp;Harga</th>
                             </tr>
                           </thead>
-                          <form id="formTabelBelanja" autocomplete="off">
-                            @csrf
-                              <tbody id="tabelListBelanja">
-                                <tr class="listBelanjaanKosong">
-                                    <td colspan="3" class="text-danger text-center fs-5">List barang kosong :(</td>
-                                </tr>
-                              </tbody>
-                          </form>
+                          <tbody id="tabelListBelanja">
+                            <tr class="listBelanjaanKosong">
+                                <td colspan="3" class="text-center fs-5" style="color:red;">List barang kosong :(</td>
+                            </tr>
+                          </tbody>
+                          
                         </table>
                       </div>
                     <div class="order-summary border rounded p-4 my-4">
                       <div class="p-0">
                         <div class="col-12">
                             <p class="mb-0 fs-4">Total Belanja</p>
-                            <h2 style="margin-top:5px; color:#606060; font-weight:normal;">Rp 0</h2>
+                            <h2 style="margin-top:5px; color:red; font-weight:bold;" class="summaryTotalBelanja" data-total-belanja="0">Rp 0</h2>
                         </div>
                         <div class="col-12">
                             <hr>
                         </div>
                         <div class="col-12">
-                            <p class="mb-0 fs-4">Total Bayar</p>
-                            <h2 style="margin-top:5px; color:#606060; font-weight:normal;">Rp 0</h2>
+                            <p class="mb-0 fs-4">
+                                Total Bayar&emsp;<span class="notifBayar"> </span>
+                            </p>
+                            <h2 style="margin-top:5px; color:#606060; font-weight:bold;" class="summaryTotalBayarRp">Rp 0</h2>
                             <h6 class="mb-0 fs-4 fw-semibold text-danger">
-                                <input type="number" class="form-control" placeholder="Nominal Bayar ..">
+                                <input type="number" class="form-control summaryTotalBayar" placeholder="Nominal Bayar ..">
                             </h6>
                         </div>
                         <div class="col-12">
@@ -139,13 +139,13 @@
                         </div>
                         <div class="col-12">
                             <p class="mb-0 fs-4">Kembalian</p>
-                            <h2 style="margin-top:5px; color:#606060; font-weight:normal;">Rp 0</h2>
+                            <h2 style="margin-top:5px; color:#606060; font-weight:normal;" class="summaryKembalian" data-total-kembalian="0">Rp 0</h2>
                         </div>
                         <div class="col-12">
                             <br>
                         </div>
                         <div class="col-12">
-                            <button type="button" class="btn btn-primary" style="width:100%; font-weight:bold;"><i class="ti ti-receipt"></i>&emsp;Konfirmasi Pembelian</button>
+                            <button type="button" class="btn btn-primary btnKonfirmasiPembelian" style="width:100%; font-weight:bold;"><i class="ti ti-receipt"></i>&emsp;Konfirmasi Pembelian</button>
                             <br>
                             <br>
                             <a class="btn btn-outline-info text btnPrintNota" href="javascript:void(0)" style="width:100%"><i class="ti ti-printer"></i>&emsp;Print Nota Pembelian</a>
@@ -395,17 +395,18 @@
                   <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][nama_barang]" value="${nama_barang}">
                   <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][satuan]" value="${satuan}">
                   <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][total_qty]" value="${total_qty}">
-                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][total_harga]" value="${total_harga}">
+                  <input type="hidden" class="form-control dynamic-total-harga-input" name="dynamicTabelBelanja[${urutan}][total_harga]" value="${total_harga}">
                   <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][harga]" value="${harga}">
                 </tr>
             `;
             tabelBelanja.append(dataHTML);
             // atur modal
             $('#ModalTambahKeList').modal('hide');
+            // hitung total belanja
+            changeTotalBelanja();
         }
 
         // ON CHANGE TABEL LIST BELANJAAN
-
         let timeQty = null;
         $(document).on('click','.btnChangeQty', function() {
             clearTimeout(timeQty);
@@ -435,12 +436,92 @@
             $('[name="' + namaAtributTotalHarga + '"]').val(total_hitungan);
 
             console.log('TOTAL QTY : '+qty+' | TOTAL HARGA : '+rp);
+            // hitung ulang total belanja
+            changeTotalBelanja();
         }
 
         // HAPUS LIST ITEM TABEL
         $(document).on('click','.btnHapusListBarang', function() {
             var urutan = $(this).attr('data-urutan');
             $('.ListUrutanBarang'+urutan).remove();
+            // hitung ulang total belanja
+            changeTotalBelanja();
+            // check jika kosong
+            var list_total = $('.nomorBelanjaan').length;
+            if(list_total < 1) {
+                $('#tabelListBelanja').html(
+                    `
+                        <tr class="listBelanjaanKosong">
+                            <td colspan="3" class="text-center fs-5" style="color:red;">List barang kosong :(</td>
+                        </tr>
+                    `);
+            }
+        });
+
+        // HITUNGAN TOTAL BELANJA
+        function changeTotalBelanja() {
+            var input_total_harga = $('.dynamic-total-harga-input');
+            var totalHarga = 0;
+            input_total_harga.each(function () {
+                // Mengambil nilai dari setiap elemen dan mengonversinya ke tipe numerik
+                var nilai = parseFloat($(this).val()) || 0;
+                // Menambahkan nilai ke totalHarga
+                totalHarga += nilai;
+            });
+            var totalHargaRp = formatRupiah(totalHarga);
+            // ubah nilai html
+            $('.summaryTotalBelanja').html(totalHargaRp);
+            $('.summaryTotalBelanja').attr('data-total-belanja',totalHarga);
+            // hitung ulang total
+            hitungTotalBayarKembalian();
+        }
+        function hitungTotalBayarKembalian() {
+            var total_belanja = $('.summaryTotalBelanja').attr('data-total-belanja');
+
+            var totalBayar = $('.summaryTotalBayar').val();
+            if(totalBayar === '' || totalBayar <= 0) {
+                totalBayar = 0;
+            }
+            var totalBayarRp = formatRupiah(totalBayar);
+            $('.summaryTotalBayarRp').html(totalBayarRp);
+            // 
+            var kembalian = totalBayar - total_belanja;
+            if(kembalian <= 0) {
+                kembalian = 0;
+            }
+            var kembalianRp = formatRupiah(kembalian);
+            $('.summaryKembalian').html(kembalianRp);
+            $('.summaryKembalian').attr('data-total-kembalian',kembalian);
+            // atur icon
+            
+        }
+        $(document).on('input','.summaryTotalBayar', function() {
+            clearTimeout(timeQty);
+            timeQty = setTimeout( function() {
+                hitungTotalBayarKembalian();
+            }, 500);
+        });
+
+        // KONFIRMASI PEMBELIAN
+        $(document).on('click','.btnKonfirmasiPembelian', function() {
+            // validasi
+            var totalBelanja = $('.summaryTotalBelanja').attr('data-total-belanja');
+            if(totalBelanja === '' || totalBelanja < 1) {
+                return toastError("Total belanja kosong!");
+            }
+            var totalBayar = $('.summaryTotalBayar').val();
+            if(totalBayar === '' || totalBayar < 1) {
+                return toastError("Total bayar kosong!");
+            }
+            if(parseFloat(totalBayar) < parseFloat(totalBelanja)) {
+                return toastError("Total pembayaran kurang dari total belanja!");
+            }
+            customConfirm("Konfirmasi pembelian ?","Pastikan data sudah benar.").then((confirmed) => {
+                if (confirmed) {
+                    // Kode AJAX disini
+                    
+                }
+            });
         });
 
         // PRINT RAWBT ( https://www.rawbt.ru/start.html )
@@ -532,7 +613,6 @@
             ribuan = ribuan.join('.').split('').reverse().join('');
             return 'Rp ' + ribuan;
         }
-
         function angkaTerbilang(nilai) {
             // deklarasi variabel nilai sebagai angka matemarika
             // Objek Math bertujuan agar kita bisa melakukan tugas matemarika dengan javascript
