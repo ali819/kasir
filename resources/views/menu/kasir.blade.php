@@ -147,8 +147,8 @@
                         <div class="col-12">
                             <button type="button" class="btn btn-primary btnKonfirmasiPembelian" style="width:100%; font-weight:bold;"><i class="ti ti-receipt"></i>&emsp;Konfirmasi Pembelian</button>
                             <br>
-                            <br>
-                            <a class="btn btn-outline-info text btnPrintNota" href="javascript:void(0)" style="width:100%"><i class="ti ti-printer"></i>&emsp;Print Nota Pembelian</a>
+                            {{-- <br> --}}
+                            {{-- <a class="btn btn-outline-info text btnPrintNota" href="javascript:void(0)" style="width:100%"><i class="ti ti-printer"></i>&emsp;Print Nota Pembelian</a> --}}
                         </div>
 
                       </div>
@@ -195,6 +195,7 @@
                         <label for="" class="" style="margin-top:10px;"><b>Total ( Rp )</b></label>
                         <h2 class="text-center hitunganTotalRp" style="margin-top:5px; color:#606060; font-weight:bold;">Rp 0</h2>
                         <h5 class="text-center hitunganTotalTerbilang" style="color:#606060;">" Terbilang "</h5>
+                        <input type="number" class="form-control idBarangDipilihPadaModal" hidden>
                     </div>
                   </div>
                   <!--/row-->
@@ -234,7 +235,7 @@
                     success: function (response) {
 
                         if(response.kode == 200) {
-                            drawFormListBarang(response.kategori_barang, response.detail_barang, response.nama_barang);
+                            drawFormListBarang(id, response.kategori_barang, response.detail_barang, response.nama_barang);
                         } else if(response.kode == 404) {
                             toastError(response.pesan);
                         } else {
@@ -253,10 +254,11 @@
                 toastError("Barang '"+value+"' tidak ditemukan!");
             }
         });
-        function drawFormListBarang(kategori_barang, detail_barang, nama_barang) {
+        function drawFormListBarang(id_barang, kategori_barang, detail_barang, nama_barang) {
             // atur text
             $('.hitunganTotalRp').html('Rp 0');
-            $('.hitunganTotalTerbilang').html('Terbilang');            
+            $('.hitunganTotalTerbilang').html('Terbilang');
+            $('.idBarangDipilihPadaModal').val(id_barang);            
 
             if(kategori_barang === 'satuan_tidak_tetap') {
                 
@@ -286,6 +288,7 @@
                 toastSuccess(nama_barang);
                 $('#tambahListNamaBarang').html(nama_barang);
                 $('#ModalTambahKeList').modal('show');
+                
             } else if(kategori_barang === 'satuan_tetap') {
                 // atur value nya
                 var eceran = detail_barang.harga_per_biji;
@@ -307,6 +310,8 @@
                 toastSuccess(nama_barang);
                 $('#tambahListNamaBarang').html(nama_barang);
                 $('#ModalTambahKeList').modal('show');
+
+
             } else {
                 toastError("Oops! Kategori barang tidak ditemukan!");
             }
@@ -339,6 +344,7 @@
         // TAMBAH KE LIST BELANJA
         $('#FormTambahListBarang').on('submit', function(e) {
             e.preventDefault();
+            var id_barang = $('.idBarangDipilihPadaModal').val();
             var nama_barang = $('#tambahListNamaBarang').html();
             var satuan = $('.hitunganDataHarga:checked').attr('data-satuan');
             var harga = $('.hitunganDataHarga:checked').attr('data-harga');
@@ -361,11 +367,11 @@
                 return;
             }
 
-            drawTabelListBelanja(nama_barang, satuan, total_qty, total_harga, harga);
+            drawTabelListBelanja(id_barang, nama_barang, satuan, total_qty, total_harga, harga);
 
 
         });
-        function drawTabelListBelanja(nama_barang, satuan, total_qty, total_harga, harga) {
+        function drawTabelListBelanja(id_barang, nama_barang, satuan, total_qty, total_harga, harga) {
             $('.listBelanjaanKosong').remove();
             var urutan = $('.nomorBelanjaan').length;
             urutan++;
@@ -392,11 +398,12 @@
                     </div>
                   </td>
                   <td class="text-end border-bottom-0"><h6 class="fs-4 fw-semibold mb-0 tabelBelanjaRp numberDataRp${urutan}">${rp}</h6></td>
-                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][nama_barang]" value="${nama_barang}">
-                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][satuan]" value="${satuan}">
-                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][total_qty]" value="${total_qty}">
-                  <input type="hidden" class="form-control dynamic-total-harga-input" name="dynamicTabelBelanja[${urutan}][total_harga]" value="${total_harga}">
-                  <input type="hidden" class="form-control" name="dynamicTabelBelanja[${urutan}][harga]" value="${harga}">
+                  <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][id_barang]" value="${id_barang}">
+                  <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][nama_barang]" value="${nama_barang}">
+                  <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][satuan]" value="${satuan}">
+                  <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][total_qty]" value="${total_qty}">
+                  <input type="hidden" class="form-control dynamicBelanjaInputan dynamic-total-harga-input" name="dynamicTabelBelanja[${urutan}][total_harga]" value="${total_harga}">
+                  <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][harga]" value="${harga}">
                 </tr>
             `;
             tabelBelanja.append(dataHTML);
@@ -502,9 +509,10 @@
             }, 500);
         });
 
-        // KONFIRMASI PEMBELIAN
+        // KONFIRMASI PEMBELIAN 
         $(document).on('click','.btnKonfirmasiPembelian', function() {
             // validasi
+            var modePrinter = $('#ModePrinter').val();
             var totalBelanja = $('.summaryTotalBelanja').attr('data-total-belanja');
             if(totalBelanja === '' || totalBelanja < 1) {
                 return toastError("Total belanja kosong!");
@@ -516,11 +524,84 @@
             if(parseFloat(totalBayar) < parseFloat(totalBelanja)) {
                 return toastError("Total pembayaran kurang dari total belanja!");
             }
+            if(modePrinter === '') {
+                return toastError("Mohon pilih mode device printer!");
+            }
             customConfirm("Konfirmasi pembelian ?","Pastikan data sudah benar.").then((confirmed) => {
                 if (confirmed) {
-                    // Kode AJAX disini
                     
+                    var btnDefault = $('.btnKonfirmasiPembelian').html();
+                    $('.btnKonfirmasiPembelian').html('Memproses ..');
+                    $('.btnKonfirmasiPembelian').attr('disabled',true);
+
+                    // Mengumpulkan data input dinamis
+                    var dynamicTabelBelanja = [];
+                    $('.dynamicBelanjaInputan').each(function () {
+                        var dataName = $(this).attr('name');
+                        var value = $(this).val();
+
+                        dynamicTabelBelanja.push({
+                            [dataName]: value
+                        });
+                    });
+                    var total_belanja = totalBelanja;
+                    var total_bayar = totalBayar;
+                    var kembalian = $('.summaryKembalian').attr('data-total-kembalian');
+
+                    $.ajax({
+                        type: "POST",
+                        url: "{{ route('konfirmasi_pembelian_barang') }}",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            dynamicTabelBelanja: dynamicTabelBelanja,
+                            total_belanja: total_belanja,
+                            total_bayar: total_bayar,
+                            kembalian: kembalian,
+                        },
+                        dataType: "JSON",
+                        success: function (response) {
+
+                            toastSuccess(response.pesan);
+
+                            printNotaPembelian(response.nota_pembelian);
+
+                            $('#tabelListBelanja').html(`
+                                <tr class="listBelanjaanKosong">
+                                    <td colspan="3" class="text-center fs-5" style="color:red;">List barang kosong :(</td>
+                                </tr>
+                            `);
+                            $('.summaryTotalBayar').val('');
+                            hitungTotalBayarKembalian();
+                            changeTotalBelanja();
+
+                        }, error: function (error) {
+                            toastError("Oops! Terjadi kesalahan. Silahkan coba lagi!")
+                        }, complete: function () {
+                            $('.btnKonfirmasiPembelian').html(btnDefault);
+                            $('.btnKonfirmasiPembelian').attr('disabled',false);
+                        }
+                    });
                 }
+            });
+        });
+
+        // STATUS PRINTER (LOCAL STORAGE)
+        function saveToLocalStorage() {
+            var selectedValue = $('#ModePrinter').val();
+            localStorage.setItem('printerMode', selectedValue);
+        } 
+        function loadFromLocalStorage() {
+            var savedValue = localStorage.getItem('printerMode');
+            if (savedValue) {
+                $('#ModePrinter').val(savedValue);
+            }
+        }
+        $(document).ready(function() {
+            loadFromLocalStorage();
+
+            // Tambahkan event listener untuk menyimpan nilai saat elemen berubah
+            $('#ModePrinter').on('change', function() {
+                saveToLocalStorage();
             });
         });
 
@@ -582,13 +663,26 @@
                 </p>
             </div>
         `;
-        $(document).on('click','.btnPrintNota', function() {
-            $('#html_print').html('');
-            $('#html_print').html(html_print);
-            var element = document.getElementById('html_print').innerText
-            PrintNota(element);
+        
+        function printNotaPembelian(HTMLarea) {
+            
+            customConfirm("Cetak Nota ?","Anda dapat mencetak ulang nota pembelian pada menu data pembelian.").then((confirmed) => { 
+                if(confirmed) {
+                    $('#html_print').html('');
+                    $('#html_print').html(HTMLarea);
+                    var element = document.getElementById('html_print').innerText
+                    PrintNota(element);
+                }
+            });
+        }
 
-        });
+        // $(document).on('click','.btnPrintNota', function() {
+        //     $('#html_print').html('');
+        //     $('#html_print').html(html_print);
+        //     var element = document.getElementById('html_print').innerText
+        //     PrintNota(element);
+        // });
+
         function PrintNota(HTMLarea){
             var S = "#Intent;scheme=rawbt;";
             var P =  "package=ru.a402d.rawbtprinter;end;";

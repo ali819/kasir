@@ -45,7 +45,7 @@
           </div>
         </div>
         <div class="col-12">
-            <button type="button" class="btn btn-primary col-12 btnTambahBarang" data-bs-toggle="modal" data-bs-target="#ModalTambahBarang" style="font-weight:bold"><i class="ti ti-pencil-plus"></i>&emsp;Tambahkan Barang</button>
+            <button type="button" class="btn btn-primary col-12 btnTambahBarang" data-bs-toggle="modal" data-bs-target="#ModalTambahBarang" style="font-weight:bold"><i class="ti ti-folder-plus"></i>&emsp;Tambahkan Barang</button>
         </div>
         <div class="col-12">
             <br>
@@ -195,7 +195,7 @@
                 <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
                   <div class="d-flex align-items-center font-medium me-3 me-md-0">
                     <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-                    Barang yang bisa dijual 'Eceran' & 'Grosir', stoknya dapat di pantau
+                    Barang bisa dijual 'Eceran' & 'Grosir' ( Satuan tetap )
                   </div>
                 </div>
               </div>
@@ -257,7 +257,7 @@
                 <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
                   <div class="d-flex align-items-center font-medium me-3 me-md-0">
                     <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-                    Setiap pembelian barang harus di timbang terlebih dahulu, stoknya tidak dapat di kalkulasi
+                    Pembelian barang umumnya harus di timbang terlebih dahulu ( Satuan tidak tetap )
                   </div>
                 </div>
               </div>
@@ -347,7 +347,7 @@
                                   <div class="ms-3" style="margin-left: 0rem !important;">
                                   <h6 class="fw-semibold mb-0 fs-4">${trimText(nama_barang)}</h6>
                                   <p class="mb-0">${formatRupiah(harga_per_biji)} / ${formatRupiah(harga_grosir)}</p>
-                                  <p class="mb-0">[&emsp;<b>${stok}</b> Pcs&emsp;]</p>
+                                  <p class="mb-0 mt-1">[&emsp;<b>${stok}</b> Pcs&emsp;]</p>
                                   </div>
                               </div>
                           `;
@@ -358,7 +358,7 @@
                                   <div class="ms-3" style="margin-left: 0rem !important;">
                                   <h6 class="fw-semibold mb-0 fs-4">${trimText(nama_barang)}</h6>
                                   <p class="mb-0">Barang Satuan Tidak Tetap</p>
-                                  <p class="mb-0">[&emsp;<b>?</b>&emsp;]</p>
+                                  <p class="mb-0 mt-1">[&emsp;<b>?</b>&emsp;]</p>
                                   </div>
                               </div>
                           `;
@@ -831,7 +831,7 @@
         <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
           <div class="d-flex align-items-center font-medium me-3 me-md-0">
             <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-            Satuan Tetap : barang yang bisa dijual 'Eceran' & 'Grosir', contohnya sabun, bolpoin, dll
+            Satuan Tetap : barang bisa dijual 'Eceran' & 'Grosir', contoh sabun, bolpoin, dll
           </div>
         </div>
       </div>
@@ -852,7 +852,7 @@
         <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
           <div class="d-flex align-items-center font-medium me-3 me-md-0">
             <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-            Satuan Tidak Tetap : setiap pembelian barang harus di timbang terlebih dahulu contohnya beras, gula, telur dll
+            Satuan Tidak Tetap : pembelian barang biasanya di timbang terlebih dahulu contoh beras, gula, telur dll
           </div>
         </div>
       </div>

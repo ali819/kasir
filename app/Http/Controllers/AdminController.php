@@ -505,4 +505,304 @@ class AdminController extends Controller
         ]);
     }
 
+    public function konfirmasi_pembelian_barang(Request $request)
+    {
+
+        // Mendapatkan data dinamis dari request
+        $dynamicTabelBelanja = $request->input('dynamicTabelBelanja');
+        $total_belanja = $request->total_belanja;
+        $total_bayar = $request->total_bayar;
+        $kembalian = $request->kembalian;
+
+        // Mengelompokkan data berdasarkan indeks dinamis
+        $groupedData = [];
+        foreach ($dynamicTabelBelanja as $data) {
+            foreach ($data as $key => $value) {
+                $index = substr($key, -1); // Mengambil indeks dinamis
+                $fieldName = key($value); // Mengambil nama field (misal: nama_barang, satuan, dll.)
+                $groupedData[$index][$fieldName] = $value[$fieldName];
+            }
+        }
+
+        // DB transaction 
+        try {
+            // Memulai transaksi database
+            DB::beginTransaction();
+
+            $timestamp = Carbon::now();
+
+            // cek id
+            $data_pembeli = DB::table('data_pembelian')->orderBy('id','DESC')->first();
+            if(!$data_pembeli) {
+                $id_transaksi = 'TRX-1';
+            } else {
+                $urutan = $data_pembeli->id + 1;
+                $id_transaksi = 'TRX-'.$urutan;
+            }
+
+            // ambil data 
+            $data_pembelian = [];
+            $data_pembelian_detail = [];
+
+            $id_barang_stok = [];
+            $list_id = [];
+
+            $list_data_belanja = [];
+            foreach ($groupedData as $index => $data) {
+                $id_barang = $data['id_barang'];
+                $nama_barang = $data['nama_barang'];
+                $satuan = $data['satuan'];
+                $total_qty = $data['total_qty'];
+                $total_harga = $data['total_harga'];
+                $harga = $data['harga'];
+
+                $list_data_belanja[] = [
+                    'nomor' => $index,
+                    'nama_barang' => $nama_barang,
+                    'total_qty' => $total_qty,
+                    'satuan' => $satuan,
+                    'harga' => $harga,
+                ];
+            
+                $data_pembelian_detail[] = [
+                    'id_transaksi' => $id_transaksi,
+                    'nama_barang' => $nama_barang,
+                    'satuan' => $satuan,
+                    'qty' => $total_qty,
+                    'harga' => $harga,
+                    'total_harga' => $total_harga,
+                    'created_at' => $timestamp,
+                    'updated_at' => $timestamp,
+                ];
+
+                // update stok barang 
+                $kategori_barang = 'satuan_tetap';
+                $barang = DB::table('stok_barang')->where('id',$id_barang)->where('kategori_barang',$kategori_barang)->first();
+                if($barang) {
+                    $stok_sekarang = $barang->stok;
+                    if($stok_sekarang > 0) {
+                        
+                        // hitung berdasarkan satuan (ecer) / (grosir)
+                        $data_satuan = strtolower($satuan);
+                        if($data_satuan == 'grosir') {
+                            $dikurangi = $total_qty * $barang->qty_grosir;
+                        } else {
+                            $dikurangi = $total_qty;
+                        }
+
+                        $hasil_pengurangan = $stok_sekarang - $dikurangi;
+                        if($hasil_pengurangan <= 0) {
+                            $hasil_pengurangan = 0;
+                        }
+                        DB::table('stok_barang')->where('id',$id_barang)->update([
+                            'stok' => $hasil_pengurangan,
+                        ]);
+                    }
+                }
+            }
+
+            // 
+            $data_pembelian[] = [
+                'id_transaksi' => $id_transaksi,
+                'pembeli' => null,
+                'total_belanja' => $total_belanja,
+                'total_bayar' => $total_bayar,
+                'kembalian' => $kembalian,
+                'created_at' => $timestamp,
+                'updated_at' => $timestamp,
+            ];
+
+            // insert 
+            DB::table('data_pembelian')->insert($data_pembelian);
+            DB::table('data_pembelian_detail')->insert($data_pembelian_detail);
+
+            // nota pembelian
+            $nota_pembelian = $this->HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp);
+
+            // Commit transaksi jika berhasil
+            DB::commit();
+            // 
+            return response()->json([
+                'kode' => 200,
+                'nota_pembelian' => $nota_pembelian,
+                'pesan' => 'Pembelian berhasil dikonfirmasi!'
+            ]);
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi pengecualian
+            DB::rollback();
+
+            // Membaca pesan error dari pengecualian
+            $errorMessage = $e->getMessage();
+
+            // Mengirim pesan error sebagai respons HTTP 500
+            return response($errorMessage, 500);
+        }
+    }
+
+    private function formatRupiah($amount)
+    {
+        return 'Rp ' . number_format($amount, 0, ',', '.');
+    }
+    private function HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp) {
+
+        // header nota pembelian
+        $nota_pembelian = 
+        '
+            <div class="col-12">
+            <h5>
+                <br>
+                <span id="notaNamaToko">NAMA TOKO</span> - <span id="notaAlamat">ALAMAT</span> 
+            </h5>
+            <p>
+                <span id="notaIdTransaksi">'.$id_transaksi.'</span> <br> 
+                <span id="notaTanggalPembelian">'.$timestamp.'</span>
+            </p>
+            <p>
+                - - - - - - - - - - - -
+                <br>
+        ';
+
+        // foreach list belanjaan
+        foreach($list_data_belanja as $item) {
+
+            $nomor = $item['nomor'];
+            $nama_barang = $item['nama_barang'];
+            $total_qty = $item['total_qty'];
+            $satuan = $item['satuan'];
+            $harga = $item['harga'];
+
+            $nota_pembelian .='
+                    ( '.$nomor.' ). '.$nama_barang.'
+                    <br>
+                    '.$total_qty.' ('.$satuan.') x '.$this->formatRupiah($harga).'
+                    <br>
+                    <br>
+            ';
+        }
+
+        // footer nota pembelian
+        $nota_pembelian .=' 
+            - - - - - - - - - - - -
+                    <br>
+                    TOTAL BELANJA
+                    <br>
+                    <span id="notaTotalBelanja">'.$this->formatRupiah($total_belanja).'</span>
+                    <br>
+                    <br>
+                    - - - - - - - - - - - -
+                    <br>
+                    TOTAL BAYAR
+                    <br>
+                    <span id="notaTotalBayar">'.$this->formatRupiah($total_bayar).'</span>
+                    <br>
+                    <br>
+                    - - - - - - - - - - - -
+                    <br>
+                    KEMBALIAN
+                    <br>
+                    <span id="notaKembalian">'.$this->formatRupiah($kembalian).'</span>
+                    <br>
+                    <br>
+                    - - - - - - - - - - - -
+                    <br>
+                </p>
+            </div>
+        ';
+
+        return $nota_pembelian;
+
+    }
+
+    public function tabel_data_pembelian(Request $request)
+    {
+        if($request->ajax()) {
+            $data = DB::table('data_pembelian')->select('*');
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->make(true);
+        }
+    }
+
+    public function detail_data_pembelian(Request $request)
+    {
+        $id_transaksi = $request->id_transaksi;
+        if($id_transaksi == null) {
+            return abort(404);
+        }
+        $data_pembelian = DB::table('data_pembelian')->where('id_transaksi',$id_transaksi)->first();
+        $detail_pembelian = DB::table('data_pembelian_detail')->where('id_transaksi',$id_transaksi)->get();
+        if($detail_pembelian->count() <= 0) {
+            return response()->json([
+                'kode' => 404,
+                'pesan' => 'List barang tidak ditemukan!',
+            ]);
+        }
+        if(!$data_pembelian) {
+            return response()->json([
+                'kode' => 404,
+                'pesan' => 'ID transaksi tidak ditemukan!',
+            ]);
+        }
+        
+        // 
+        $tanggal = $data_pembelian->created_at;
+        $total_belanja = $data_pembelian->total_belanja;
+        $total_bayar = $data_pembelian->total_bayar;
+        $kembalian = $data_pembelian->kembalian;
+        $list = $detail_pembelian;
+        // 
+        
+        return response()->json([
+            'kode' => 200,
+            'tanggal' => $tanggal,
+            'total_belanja' => $total_belanja,
+            'total_bayar' => $total_bayar,
+            'kembalian' => $kembalian,
+            'list' => $list,
+            'pesan' => 'Menampilkan detail pembelian.',
+        ]);
+
+        
+
+    }
+
+    public function hapus_data_pembelian(Request $request)
+    {
+
+        $list_id = $request->input('list_id_transaksi');
+        if (empty($list_id)) { 
+            return abort(404);
+        }
+
+        // DB transaction 
+        try {
+            // Memulai transaksi database
+            DB::beginTransaction();
+
+            // hapus data dari 2 tabel
+            Db::table('data_pembelian')->whereIn('id_transaksi',$list_id)->delete();
+            Db::table('data_pembelian_detail')->whereIn('id_transaksi',$list_id)->delete();
+
+            // Commit transaksi jika berhasil
+            DB::commit();
+            // 
+            return response()->json([
+                'kode' => 200,
+                'pesan' => 'Data berhasil dihapus!',
+            ]);
+
+        } catch (\Exception $e) {
+            // Rollback transaksi jika terjadi pengecualian
+            DB::rollback();
+
+            // Membaca pesan error dari pengecualian
+            $errorMessage = $e->getMessage();
+
+            // Mengirim pesan error sebagai respons HTTP 500
+            return response($errorMessage, 500);
+        }
+
+    }
+
 }

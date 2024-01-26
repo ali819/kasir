@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('id_transaksi');
             $table->string('nama_barang');
+            $table->string('satuan');
             $table->unsignedInteger('qty');
             $table->unsignedBigInteger('harga');
             $table->unsignedBigInteger('total_harga');

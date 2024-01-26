@@ -50,6 +50,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/stok/update-barang-1', [AdminController::class, 'update_barang1'])->name('update_barang1');
     
     Route::get('/kasir/detail-data-barang', [AdminController::class, 'detail_data_barang'])->name('detail_data_barang');
+    Route::post('/kasir/konfirmasi-pembelian-barang', [AdminController::class, 'konfirmasi_pembelian_barang'])->name('konfirmasi_pembelian_barang');
+
+    Route::get('/data-pembelian/tabel-data-pembelian', [AdminController::class, 'tabel_data_pembelian'])->name('tabel_data_pembelian');
+    Route::get('/data-pembelian/detail-data-pembelian', [AdminController::class, 'detail_data_pembelian'])->name('detail_data_pembelian');
+    Route::delete('/data-pembelian/hapus-data-pembelian', [AdminController::class, 'hapus_data_pembelian'])->name('hapus_data_pembelian');
 
 });
 
