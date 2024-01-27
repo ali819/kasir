@@ -264,8 +264,12 @@
                 
                 var dataHTML = 
                 `
-                    <label for="" class=""><b>Jumlah Pembelian ( Per-Satuan )</b></label>
-                    <input type="number" class="form-control hitunganDataQty" id="detailJumlahQty" name="detailJumlahQty" placeholder="Qty .." value="1" step="0.01" required>
+                    <label for="" class="" style="margin-bottom:10px;"><b>Jumlah Pembelian ( Per-Satuan )</b></label>
+                    <div class="input-group input-group-sm rounded">
+                        <button class="btn min-width-40 py-0 border-end border-dark border-end-0 text-dark btnMinusTambahList" type="button" id=""><i class="ti ti-minus"></i></button>
+                        <input type="text" class="min-width-40 flex-grow-0 border border-dark text-dark fs-3 fw-semibold form-control text-center qty hitunganDataQty" id="detailJumlahQty" name="detailJumlahQty" value="1" step="0.01" required>
+                        <button class="btn min-width-40 py-0 border border-dark border-start-0 text-dark btnPlusTambahList" type="button" id=""><i class="ti ti-plus"></i></button>
+                    </div>
                     </br>
                 `;
 
@@ -295,8 +299,12 @@
                 var grosir = detail_barang.harga_grosir;
                 var dataHTML = 
                 `
-                    <label for="" class=""><b>Jumlah Beli ( Qty )</b></label>
-                    <input type="number" class="form-control hitunganDataQty" id="detailJumlahQty" name="detailJumlahQty" placeholder="1 - 99999" required>
+                    <label for="" class="" style="margin-bottom:10px;"><b>Jumlah Beli ( Qty )</b></label>
+                    <div class="input-group input-group-sm rounded">
+                        <button class="btn min-width-40 py-0 border-end border-dark border-end-0 text-dark btnMinusTambahList" type="button" id=""><i class="ti ti-minus"></i></button>
+                        <input type="text" class="min-width-40 flex-grow-0 border border-dark text-dark fs-3 fw-semibold form-control text-center qty hitunganDataQty" id="detailJumlahQty" name="detailJumlahQty" value="1" step="0.01" required>
+                        <button class="btn min-width-40 py-0 border border-dark border-start-0 text-dark btnPlusTambahList" type="button" id=""><i class="ti ti-plus"></i></button>
+                    </div>
                     </br>
                     <input type="radio" class="btn-check hitunganDataHarga" name="detailSatuan" id="detailSatuanEcer" data-satuan="Eceran" data-harga="${eceran}" autocomplete="off" />
                     <label class="btn btn-outline-primary rounded-pill font-medium me-2 mb-2" for="detailSatuanEcer"><b>Ecer</b> - ${formatRupiah(eceran)}</label>
@@ -317,7 +325,8 @@
             }
         }
 
-        // TOTAL BELANJA & TERBILANG (HITUNGAN PADA MODAL)
+        
+        // HITUNGAN + - PADA MODAL
         function hitunganTotalBelanja() {
             var qty = $('.hitunganDataQty').val();
             var harga = $('.hitunganDataHarga:checked').attr('data-harga');
@@ -334,7 +343,35 @@
             console.log('QTY : '+qty+' | HARGA : '+Rp+' | TERBILANG : '+Terbilang);
 
         }
-        $(document).on('input','.hitunganDataQty', function() {
+        $(document).on('click', '.btnMinusTambahList', function () {
+            var inputQty = $(this).parent().find('.qty');
+            var currentValue = parseFloat(inputQty.val());
+
+            if (!isNaN(currentValue) && currentValue > 0) {
+                inputQty.val(currentValue - 1);
+            } else {
+                inputQty.val(0);
+            }
+            hitunganTotalBelanja();
+        });
+        $(document).on('click', '.btnPlusTambahList', function () {
+            var inputQty = $(this).parent().find('.qty');
+            var currentValue = parseFloat(inputQty.val());
+
+            if (!isNaN(currentValue)) {
+                inputQty.val(currentValue + 1);
+            } else {
+                inputQty.val(1);
+            }
+            hitunganTotalBelanja();
+        });
+        $(document).on('input','#detailJumlahQty', function() {
+            var inputQty = $('#detailJumlahQty').val();
+            if (!isNaN(inputQty)) {
+                $('#detailJumlahQty').val(inputQty);
+            } else {
+                $('#detailJumlahQty').val(1);
+            }
             hitunganTotalBelanja();
         });
         $(document).on('click','.hitunganDataHarga', function() {
