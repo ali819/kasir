@@ -40,13 +40,22 @@
           </div>
         </div>
         <div class="col-12">
+          <div class="col-12">
+            <select name="modePrinter" id="ModePrinter" class="form-control">
+                <option value="">- Pilih Mode Printer -</option>
+                <option value="hp">Printer : Handphone ( Android, IOS, Tablet )</option>
+                <option value="pc">Printer : PC ( Laptop / Komputer )</option>
+            </select>
+        </div>
+        </div>
+        <div class="col-12">
             <br>
         </div>
         <div class="col-4">
             <h5 class="card-title fw-semibold mb-0 lh-sm" style="color: rgb(48, 48, 48)">Pencarian</h5>
         </div>
         <div class="col-8" align="right">
-            <button type="button" class="btn btn-outline-dark btnHapusTransaksiDipilih"><i class="ti ti-trash"></i>&emsp;Hapus Data Dipilih</button>
+            <button type="button" class="btn btn-outline-danger btnHapusTransaksiDipilih"><i class="ti ti-trash"></i>&emsp;Hapus Data Dipilih</button>
         </div>
     </div>
     <div class="w-100 position-relative overflow-hidden">
@@ -92,6 +101,9 @@
           <div class="d-flex align-items-center justify-content-end py-1">
             <br>
           </div>
+        </div>
+        <div class="row" id="html_print">
+
         </div>
       </div>
     </div>
@@ -287,14 +299,13 @@
           tabel_data_pembelian.column(3).search($('#cariTanggalBeli').val()).draw();
         });
 
-        $('#tabel_data_pembelian tbody').on('click', 'tr', function () {
-            // Check if the click occurred on a button
-            if ($(event.target).is('button')) {
+        $('#tabel_data_pembelian tbody').on('click', '.clickableCell', function (event) {
+            // Check if the click occurred on a button or input checkbox
+            if ($(event.target).is('button') || $(event.target).is('input[type="checkbox"]')) {
                 return;
             }
-            var checkbox = $(this).find('.clickableCell .dataIdPembelianBarang');
-
             // Toggle the checkbox state
+            var checkbox = $(this).find('.dataIdPembelianBarang');
             checkbox.prop('checked', !checkbox.prop('checked'));
         });
 
@@ -305,6 +316,7 @@
 
         $('.btnEditDataPembelian').attr('disabled',true);
         var id_transaksi = $(this).attr('data-id-transaksi');
+        animasiProgressBar_run();
 
         $.ajax({
             type: "GET",
@@ -349,7 +361,7 @@
                 toastError("Oops! Terjadi kesalahan. Coba lagi!");
 
             }, complete: function () {
-
+              animasiProgressBar_stop();
                 $('.btnEditDataPembelian').attr('disabled',false);
             }
         });
@@ -396,6 +408,84 @@
                     }
                 });
             }
+        });
+    });
+
+    // PRINT NOTA PEMBELIAN
+    $(document).on('click','.btnPrintDataPembelian', function() {
+      // validasi
+        var id_transaksi = $(this).attr('data-id-transaksi');
+        var modePrinter = $('#ModePrinter').val();
+        if(modePrinter === '') {
+            return toastError("Mohon pilih mode device printer!");
+        }
+        if(id_transaksi === '') {
+            return toastError("ID transaksi kosong. Silahkan coba lagi!");
+        }
+        customConfirm("Cetak Nota ?","Pastikan data sudah benar '"+id_transaksi+"'").then((confirmed) => { 
+            if (confirmed) {
+
+                $('.btnPrintDataPembelian').attr('disabled',true);
+                animasiProgressBar_run();
+
+                $.ajax({
+                  type: "GET",
+                  url: "{{ route('nota_pembelian_html') }}",
+                  data: {
+                    id_transaksi: id_transaksi,
+                  },
+                  dataType: "JSON",
+                  success: function (response) {
+                    
+                    if(response.kode == 404) {
+                      return toastError(response.pesan);
+                    }
+
+                    toastSuccess(response.pesan);
+                    printNotaPembelian(response.nota_pembelian);
+
+                  }, error: function (error) {
+                    toastError("Oops! Silahkan coba lagi!");
+                  }, complete: function () {
+
+                    animasiProgressBar_stop();
+                    $('.btnPrintDataPembelian').attr('disabled',false);
+
+                  }
+                });
+            }
+        });
+    });
+    function printNotaPembelian(HTMLarea) {
+        $('#html_print').html('');
+        $('#html_print').html(HTMLarea);
+        var element = document.getElementById('html_print').innerText
+        PrintNota(element);
+    }
+    function PrintNota(HTMLarea){
+        var S = "#Intent;scheme=rawbt;";
+        var P =  "package=ru.a402d.rawbtprinter;end;";
+        var textEncoded = encodeURI(HTMLarea);
+        window.location.href="intent:"+textEncoded+S+P;
+        $('#html_print').html('');
+    }
+    // STATUS PRINTER (LOCAL STORAGE)
+    function saveToLocalStorage() {
+        var selectedValue = $('#ModePrinter').val();
+        localStorage.setItem('printerMode', selectedValue);
+    } 
+    function loadFromLocalStorage() {
+        var savedValue = localStorage.getItem('printerMode');
+        if (savedValue) {
+            $('#ModePrinter').val(savedValue);
+        }
+    }
+    $(document).ready(function() {
+        loadFromLocalStorage();
+    
+        // Tambahkan event listener untuk menyimpan nilai saat elemen berubah
+        $('#ModePrinter').on('change', function() {
+            saveToLocalStorage();
         });
     });
 

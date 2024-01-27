@@ -805,4 +805,57 @@ class AdminController extends Controller
 
     }
 
+    public function nota_pembelian_html(Request $request)
+    {
+        $id_transaksi = $request->id_transaksi;
+        if($id_transaksi == null) {
+            return abort(404);
+        }
+
+        // ambil data
+        $data_pembelian = DB::table('data_pembelian')->where('id_transaksi',$id_transaksi)->first();
+        $data_pembelian_detail = DB::table('data_pembelian_detail')->where('id_transaksi',$id_transaksi)->get();
+        if(!$data_pembelian) {
+            return response()->json([
+                'kode' => 404,
+                'pesan' => 'ID transaksi pembelian tidak di temukan!',
+            ]);
+        }
+        if($data_pembelian_detail->count() <= 0) {
+            return response()->json([
+                'kode' => 404,
+                'pesan' => 'Detail pembelian tidak di temukan!',
+            ]);
+        }
+
+        // variabel di kirim
+        $list_data_belanja = [];
+        foreach($data_pembelian_detail as $index => $item) {
+
+            $list_data_belanja[] = [
+                'nomor' => $index,
+                'nama_barang' => $item->nama_barang,
+                'total_qty' => $item->qty,
+                'satuan' => $item->satuan,
+                'harga' => $item->harga,
+            ];
+
+        }
+        // 
+        $id_transaksi = $data_pembelian->id_transaksi;
+        $total_belanja = $data_pembelian->total_belanja;
+        $total_bayar = $data_pembelian->total_bayar;
+        $kembalian = $data_pembelian->kembalian;
+        $timestamp = $data_pembelian->created_at;
+
+
+        $nota_pembelian = $this->HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp);
+
+        return response()->json([
+            'kode' => 200,
+            'nota_pembelian' => $nota_pembelian,
+            'pesan' => 'Mencetak nota pembelian',
+        ]);
+    }
+
 }

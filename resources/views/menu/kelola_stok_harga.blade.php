@@ -537,6 +537,8 @@
         $('#updateTitleNamaBarang1').html(namaBarang);
         $('#updateNamaBarang1').val(namaBarang);
         // 
+        animasiProgressBar_run();
+        // 
         $('.btnEditStok').attr('disabled',true);
         // ambil data satuan
         $.ajax({
@@ -597,6 +599,7 @@
 
           }, complete: function () {
             $('.btnEditStok').attr('disabled',false);
+            animasiProgressBar_stop();
           }
           
         });
