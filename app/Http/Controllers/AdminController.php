@@ -776,6 +776,10 @@ class AdminController extends Controller
             $data = DB::table('data_pembelian')->select('*');
             return Datatables::of($data)
                     ->addIndexColumn()
+                    ->addColumn('formatted_date', function ($row) {
+                        // Format the 'created_at' column as "Senin, 23 Desember 2024 10:10:10"
+                        return Carbon::parse($row->created_at)->isoFormat('dddd, D MMMM YYYY HH:mm:ss');
+                    })
                     ->make(true);
         }
     }
@@ -921,6 +925,45 @@ class AdminController extends Controller
             'nota_pembelian' => $nota_pembelian,
             'raw_data' => $raw_data,
             'pesan' => 'Mencetak nota pembelian',
+        ]);
+    }
+
+    public function tabel_detail_pembelian(Request $request) 
+    {
+        if($request->ajax()) {
+            $data = DB::table('data_pembelian_detail')->select('*');
+            return Datatables::of($data)
+                    ->addIndexColumn()
+                    ->addColumn('formatted_date', function ($row) {
+                        // Format the 'created_at' column as "Senin, 23 Desember 2024 10:10:10"
+                        return Carbon::parse($row->created_at)->isoFormat('dddd, D MMMM YYYY HH:mm:ss');
+                    })
+                    ->make(true);
+        }
+    }
+    public function hitung_data_pembelian(Request $request)
+    {
+        $tanggal = $request->tanggal;
+        if($tanggal == null) {
+            return response()->json([
+                'kode' => 404,
+                'pesan' => 'Tanggal tidak boleh kosong!',
+            ]);
+        }
+
+        $data = DB::table('data_pembelian_detail')->select('*')->where('created_at','LIKE',$tanggal.'%')->get();
+        $total_omzet = $data->sum('total_harga');
+        $total_transaksi = $data->groupBy('id_transaksi')->count();
+        $barang_terjual = $data->sum('qty');
+
+        $tanggal_formatted = Carbon::parse($tanggal)->isoFormat('dddd, D MMMM YYYY');
+
+        return response()->json([
+            'kode' => 200,
+            'total_omzet' => 'Rp ' . number_format($total_omzet, 0, ',', '.'),
+            'total_transaksi' => $total_transaksi,
+            'barang_terjual' => $barang_terjual,
+            'pesan' => 'Data : '.$tanggal_formatted,
         ]);
     }
 

@@ -292,6 +292,7 @@
           });
         }
         function customConfirm(title, message) {
+            toggleTabIndex(true);
             return new Promise((resolve) => {
                 Swal.fire({
                     title: title,
@@ -303,8 +304,23 @@
                     confirmButtonText: "Ya, lanjutkan",
                     cancelButtonText: "Batal"
                 }).then((result) => {
+                    toggleTabIndex(false);
                     resolve(result.isConfirmed);
                 });
+            });
+        }
+        function toggleTabIndex(status) {
+            // Pilih semua elemen input dalam formulir
+            var formInputs = $('input, textarea');
+            // Iterasi melalui elemen-elemen input dan atur/menghapus atribut tabindex
+            formInputs.each(function () {
+              if (status) {
+                  // Jika modal diaktifkan, tambahkan atribut tabindex="-1"
+                  $(this).attr('tabindex', '-1');
+              } else {
+                  // Jika modal dinonaktifkan, hapus atribut tabindex
+                  $(this).attr('tabindex',' ');
+              }
             });
         }
     </script>

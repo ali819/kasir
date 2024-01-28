@@ -455,48 +455,49 @@
     $('#FormTambahBarang').on('submit', function(event) {
         event.preventDefault();
 
-        if(confirm("Tambah barang baru ?")) {
-              var data = $(this).serialize();
-              var btnValue = $('.btnKonfirmasiTambahBarang').html();
-              $('.btnKonfirmasiTambahBarang').html('Memproses ..');
-              $('.btnKonfirmasiTambahBarang').attr('disabled',true);
-               
-              $.ajax({
-                type: "POST",
-                url: "{{ route('tambah_barang_baru') }}",
-                data: data,
-                dataType: "JSON",
-                success: function (response) {
-                  if(response.kode == 200) {
-                    // kosongkan form
-                    $('#FormTambahBarang')[0].reset();
-                    $('#DataBarangDynamic').html('');
-                    $('.btnKonfirmasiTambahBarang').attr('disabled',true);
-                    $('.btnKonfirmasiTambahBarang').html('Silahkan Pilih Kategori..');
-                    // toast
-                    toastSuccess(response.pesan);
-                    // draw
-                    $("#tabel_stok").DataTable().draw();
-
-                  } else if(response.kode == 422) {
-
-                    errorHandlerToast(response.pesan);
-                    $('.btnKonfirmasiTambahBarang').html(btnValue);
-                    $('.btnKonfirmasiTambahBarang').attr('disabled',false);
-
-                  }
-                }, error: function (error) {
-
-                  toastError("Oops! Terjadi kesalahan.");
+        customConfirm("Tambah barang ?","Pastikan data yang anda masukan sudah benar.").then((confirmed) => {
+          if (confirmed) { 
+            var data = $(this).serialize();
+            var btnValue = $('.btnKonfirmasiTambahBarang').html();
+            $('.btnKonfirmasiTambahBarang').html('Memproses ..');
+            $('.btnKonfirmasiTambahBarang').attr('disabled',true);
+             
+            $.ajax({
+              type: "POST",
+              url: "{{ route('tambah_barang_baru') }}",
+              data: data,
+              dataType: "JSON",
+              success: function (response) {
+                if(response.kode == 200) {
+                  // kosongkan form
+                  $('#FormTambahBarang')[0].reset();
+                  $('#DataBarangDynamic').html('');
+                  $('.btnKonfirmasiTambahBarang').attr('disabled',true);
+                  $('.btnKonfirmasiTambahBarang').html('Silahkan Pilih Kategori..');
+                  // toast
+                  toastSuccess(response.pesan);
+                  // draw
+                  $("#tabel_stok").DataTable().draw();
+    
+                } else if(response.kode == 422) {
+    
+                  errorHandlerToast(response.pesan);
                   $('.btnKonfirmasiTambahBarang').html(btnValue);
                   $('.btnKonfirmasiTambahBarang').attr('disabled',false);
-                
+    
                 }
+              }, error: function (error) {
+    
+                toastError("Oops! Terjadi kesalahan.");
+                $('.btnKonfirmasiTambahBarang').html(btnValue);
+                $('.btnKonfirmasiTambahBarang').attr('disabled',false);
+              
+              }
+    
+            });
+          }
+        });
 
-              });
-        } else {
-          return;
-        }
     });
     $(document).on('click','.btnBatalTambahBarang', function() {
       $('#FormTambahBarang')[0].reset();
@@ -615,44 +616,44 @@
     $('#FormUpdateBarang').on('submit', function(event) {
         event.preventDefault();
 
-        if(confirm("Perbarui data barang ini ?")) {
-              var data = $(this).serialize();
-              var btnValue = $('.btnKonfirmasiUpdateBarang').html();
-              $('.btnKonfirmasiUpdateBarang').html('Memproses ..');
-              $('.btnKonfirmasiUpdateBarang').attr('disabled',true);
-               
-              $.ajax({
-                type: "POST",
-                url: "{{ route('update_barang') }}",
-                data: data,
-                dataType: "JSON",
-                success: function (response) {
-                  if(response.kode == 200) {
-                    // toast
-                    toastSuccess(response.pesan);
-                    // draw
-                    $("#tabel_stok").DataTable().draw();
-                    
-                  } else if(response.kode == 500) {
-                    toastError(response.pesan);
-
-                  } else if(response.kode == 422) {
-
-                    errorHandlerToast(response.pesan);
-
-                  }
-                }, error: function (error) {
-
-                  toastError("Oops! Terjadi kesalahan.");
-                
-                }, complete: function () {
-                  $('.btnKonfirmasiUpdateBarang').html(btnValue);
-                  $('.btnKonfirmasiUpdateBarang').attr('disabled',false);
+        customConfirm("Perbarui ?","Pastikan data sudah benar.").then((confirmed) => {
+          if (confirmed) { 
+            var data = $(this).serialize();
+            var btnValue = $('.btnKonfirmasiUpdateBarang').html();
+            $('.btnKonfirmasiUpdateBarang').html('Memproses ..');
+            $('.btnKonfirmasiUpdateBarang').attr('disabled',true);
+             
+            $.ajax({
+              type: "POST",
+              url: "{{ route('update_barang') }}",
+              data: data,
+              dataType: "JSON",
+              success: function (response) {
+                if(response.kode == 200) {
+                  // toast
+                  toastSuccess(response.pesan);
+                  // draw
+                  $("#tabel_stok").DataTable().draw();
+                  
+                } else if(response.kode == 500) {
+                  toastError(response.pesan);
+    
+                } else if(response.kode == 422) {
+    
+                  errorHandlerToast(response.pesan);
+    
                 }
-              });
-        } else {
-          return;
-        }
+              }, error: function (error) {
+    
+                toastError("Oops! Terjadi kesalahan.");
+              
+              }, complete: function () {
+                $('.btnKonfirmasiUpdateBarang').html(btnValue);
+                $('.btnKonfirmasiUpdateBarang').attr('disabled',false);
+              }
+            });
+          }
+        });
     });
     $(document).on('input','#updateNamaBarang', function() {
         var valueName = $(this).val();
@@ -687,79 +688,80 @@
           return;
         }
 
-        if(confirm("Hapus data satuan? data yang sudah dihapus tidak bisa dikembalikan.")) {
-
-          $('.btnHapusDataSatuan1').attr('disabled',true);
-
-          $.ajax({
-            type: "DELETE",
-            url: "{{ route('hapus_data_satuan_list') }}",
-            data: {
-              _token: "{{ csrf_token() }}",
-              id: id_stok,
-            },
-            dataType: "JSON",
-            success: function (response) {
-              if(response.kode == 200) {
-                $('#'+id_inputan).remove();
-              } else if(response.kode == 400) {
-                toastError(response.pesan);
+        customConfirm("Hapus satuan?","Data yang sudah dihapus tidak bisa dikembalikan.").then((confirmed) => {
+          if (confirmed) { 
+            $('.btnHapusDataSatuan1').attr('disabled',true);
+    
+            $.ajax({
+              type: "DELETE",
+              url: "{{ route('hapus_data_satuan_list') }}",
+              data: {
+                _token: "{{ csrf_token() }}",
+                id: id_stok,
+              },
+              dataType: "JSON",
+              success: function (response) {
+                if(response.kode == 200) {
+                  $('#'+id_inputan).remove();
+                } else if(response.kode == 400) {
+                  toastError(response.pesan);
+                }
+              }, error: function (error) {
+                  toastError("Oops! Silahkan coba lagi.");
+              }, complete: function () {
+                $('.btnHapusDataSatuan1').attr('disabled',false);
               }
-            }, error: function (error) {
-                toastError("Oops! Silahkan coba lagi.");
-            }, complete: function () {
-              $('.btnHapusDataSatuan1').attr('disabled',false);
-            }
-
-          });
-
-        } else {
-          return;
-        }
+    
+            });
+    
+          }
+        });
 
     });
     $('#FormUpdateBarang1').on('submit', function(event) {
         event.preventDefault(event);
-        if(confirm("Perbarui data barang ini? pastikan data sudah benar.")) {
-              var data = $(this).serialize();
-              var btnValue = $('.btnKonfirmasiUpdateBarang1').html();
-              $('.btnKonfirmasiUpdateBarang1').html('Memproses ..');
-              $('.btnKonfirmasiUpdateBarang1').attr('disabled',true);
-               
-              $.ajax({
-                type: "POST",
-                url: "{{ route('update_barang1') }}",
-                data: data,
-                dataType: "JSON",
-                success: function (response) {
-                  if(response.kode == 200) {
-                    // toast
-                    toastSuccess(response.pesan);
-                    // draw
-                    $("#tabel_stok").DataTable().draw();
-                    // hidden
-                    $('#ModalUpdateBarang1').modal('hide');
-                    
-                  } else if(response.kode == 500) {
-                    toastError(response.pesan);
 
-                  } else if(response.kode == 422) {
-
-                    errorHandlerToast(response.pesan);
-
-                  }
-                }, error: function (error) {
-
-                  toastError("Oops! Terjadi kesalahan.");
-                
-                }, complete: function () {
-                  $('.btnKonfirmasiUpdateBarang1').html(btnValue);
-                  $('.btnKonfirmasiUpdateBarang1').attr('disabled',false);
+        customConfirm("Perbarui ?","Pastikan data sudah benar.").then((confirmed) => {
+          if (confirmed) { 
+            var data = $(this).serialize();
+            var btnValue = $('.btnKonfirmasiUpdateBarang1').html();
+            $('.btnKonfirmasiUpdateBarang1').html('Memproses ..');
+            $('.btnKonfirmasiUpdateBarang1').attr('disabled',true);
+             
+            $.ajax({
+              type: "POST",
+              url: "{{ route('update_barang1') }}",
+              data: data,
+              dataType: "JSON",
+              success: function (response) {
+                if(response.kode == 200) {
+                  // toast
+                  toastSuccess(response.pesan);
+                  // draw
+                  $("#tabel_stok").DataTable().draw();
+                  // hidden
+                  $('#ModalUpdateBarang1').modal('hide');
+                  
+                } else if(response.kode == 500) {
+                  toastError(response.pesan);
+    
+                } else if(response.kode == 422) {
+    
+                  errorHandlerToast(response.pesan);
+    
                 }
-              });
-        } else {
-          return;
-        }
+              }, error: function (error) {
+    
+                toastError("Oops! Terjadi kesalahan.");
+              
+              }, complete: function () {
+                $('.btnKonfirmasiUpdateBarang1').html(btnValue);
+                $('.btnKonfirmasiUpdateBarang1').attr('disabled',false);
+              }
+            });
+  
+          }
+        });
     });
     $(document).on('click','.btnTutupModalUpdateBarang1', function() {
         $('#FormUpdateBarang1')[0].reset();
@@ -773,44 +775,47 @@
     // HAPUS
     $(document).on('click','.btnHapusStok', function() {
         var id = $(this).attr('data-id');
-        if(confirm("Apakah anda yakin akan menghapus data ini ?")) {
-          if(confirm("Data yang sudah dihapus tidak bisa dikembalikan, Lanjutkan ?")) {
 
-            // 
-            var btnValue = $(this).html();
-            $('.btnHapusStok').html('<i class="ti ti-loader-2"></i>');
-            $('.btnHapusStok').attr('disabled',true); 
-            // 
-            $.ajax({
-              type: "DELETE",
-              url: "{{ route('hapus_data_barang') }}",
-              data: {
-                _token: "{{ csrf_token() }}",
-                id: id,
-              },
-              dataType: "JSON",
-              success: function (response) {
-                
-                $("#tabel_stok").DataTable().draw();
-                toastError(response.pesan);
-                
-              }, error: function (error) {
-                
-                toastError("Oops! Silahkan coba lagi.");
-              
-              }, complete: function () {
-                $('.btnHapusStok').html(btnValue);
-                $('.btnHapusStok').attr('disabled',false);
+        customConfirm("Hapus ?","Apakah anda yakin menghapus data ini ?").then((confirmed) => {
+          if (confirmed) { 
+
+            customConfirm("Yakin ?","Data yang sudah dihapus tidak bisa dikembalikan.").then((confirmed) => {
+              if (confirmed) { 
+                // 
+                var btnValue = $(this).html();
+                $('.btnHapusStok').html('<i class="ti ti-loader-2"></i>');
+                $('.btnHapusStok').attr('disabled',true); 
+                // 
+                $.ajax({
+                  type: "DELETE",
+                  url: "{{ route('hapus_data_barang') }}",
+                  data: {
+                    _token: "{{ csrf_token() }}",
+                    id: id,
+                  },
+                  dataType: "JSON",
+                  success: function (response) {
+                    
+                    $("#tabel_stok").DataTable().draw();
+                    toastSuccess(response.pesan);
+                    
+                  }, error: function (error) {
+                    
+                    toastError("Oops! Silahkan coba lagi.");
+                  
+                  }, complete: function () {
+                    $('.btnHapusStok').html(btnValue);
+                    $('.btnHapusStok').attr('disabled',false);
+                  }
+      
+                });
+        
               }
-
             });
-
-          } else {
-            return;
+    
           }
-        } else {
-          return;
-        }
+        });
+
     });
 
     // TERBILANG

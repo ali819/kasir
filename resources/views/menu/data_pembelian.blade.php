@@ -61,7 +61,7 @@
         </div>
         <div class="col-md-6">  
             <div class="mb-3">
-                <input type="number" class="form-control" id="cariTotalBayar" name="cariTotalBayar" placeholder="Total bayar .." autocomplete="off">
+                <input type="number" class="form-control" id="cariTotalBelanja" name="cariTotalBelanja" placeholder="Total belanja .." autocomplete="off">
             </div>
         </div>
         <div class="col-12">  
@@ -219,15 +219,15 @@
                     data: 'id_transaksi',
                     render: function (data, type, row, meta) {
                         var id_transaksi = row.id_transaksi;
-                        var total_bayar = row.total_bayar;
-                        var tanggal = row.created_at;
+                        var total_belanja = row.total_belanja;
+                        var tanggal = row.formatted_date;
 
                         var views = `
                             <div class="d-flex align-items-center">
                                 <div class="ms-3" style="margin-left: 0rem !important;">
                                 <h6 class="fw-semibold mb-0 fs-4">${trimText(id_transaksi)}</h6>
                                 <p class="mb-0">${tanggal}</p>
-                                <p class="mb-0 mt-1">[&emsp;<b>${formatRupiah(total_bayar)}</b>&emsp;]</p>
+                                <p class="mb-0 mt-1">[&emsp;<b>${formatRupiah(total_belanja)}</b>&emsp;]</p>
                                 </div>
                             </div>
                         `;
@@ -256,7 +256,7 @@
                   visible: false
                 },
                 {
-                  data: 'total_bayar',
+                  data: 'total_belanja',
                   visible: false
                 }
         
@@ -278,12 +278,12 @@
               tabel_data_pembelian.column(1).search($('#cariIdTransaksi').val()).draw();
             }, 500);
         });
-        let cariTotalBayar = null;
-        $('#cariTotalBayar').on('input', function() {
-            clearTimeout(cariTotalBayar);
-            cariTotalBayar = setTimeout( function() {
+        let cariTotalBelanja = null;
+        $('#cariTotalBelanja').on('input', function() {
+            clearTimeout(cariTotalBelanja);
+            cariTotalBelanja = setTimeout( function() {
               animasiProgressBar_run();
-              tabel_data_pembelian.column(4).search($('#cariTotalBayar').val()).draw();
+              tabel_data_pembelian.column(4).search($('#cariTotalBelanja').val()).draw();
             }, 500);
         });
         $('#cariTanggalBeli').on('change', function() {

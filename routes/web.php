@@ -53,8 +53,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/data-pembelian/tabel-data-pembelian', [AdminController::class, 'tabel_data_pembelian'])->name('tabel_data_pembelian');
     Route::get('/data-pembelian/detail-data-pembelian', [AdminController::class, 'detail_data_pembelian'])->name('detail_data_pembelian');
     Route::delete('/data-pembelian/hapus-data-pembelian', [AdminController::class, 'hapus_data_pembelian'])->name('hapus_data_pembelian');
-    
     Route::get('/data-pembelian/nota-pembelian-html', [AdminController::class, 'nota_pembelian_html'])->name('nota_pembelian_html');
+    
+    Route::get('/dashboard/tabel-detail-pembelian', [AdminController::class, 'tabel_detail_pembelian'])->name('tabel_detail_pembelian');
+    Route::get('/dashboard/hitung-data-pembelian', [AdminController::class, 'hitung_data_pembelian'])->name('hitung_data_pembelian');
 
 });
 
