@@ -39,15 +39,7 @@
             </div>
           </div>
         </div>
-        <div class="col-12">
-          <div class="col-12">
-            <select name="modePrinter" id="ModePrinter" class="form-control">
-                <option value="">- Pilih Mode Printer -</option>
-                <option value="hp">Printer : Handphone ( Android, IOS, Tablet )</option>
-                <option value="pc">Printer : PC ( Laptop / Komputer )</option>
-            </select>
-        </div>
-        </div>
+        
         <div class="col-12">
             <br>
         </div>
@@ -110,7 +102,7 @@
     <!-- --------------------------------------------------- -->
 </div>
 
-{{-- MODAL DATA PEMBELIAN (LIHAT, EDIT, HAPUS) --}}
+{{-- MODAL DATA PEMBELIAN --}}
 <div class="modal fade" id="ModalDataPembelian" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -422,71 +414,55 @@
         if(id_transaksi === '') {
             return toastError("ID transaksi kosong. Silahkan coba lagi!");
         }
-        customConfirm("Cetak Nota ?","Pastikan data sudah benar '"+id_transaksi+"'").then((confirmed) => { 
-            if (confirmed) {
 
-                $('.btnPrintDataPembelian').attr('disabled',true);
-                animasiProgressBar_run();
+        // 
+        $('.btnPrintDataPembelian').attr('disabled',true);
+        animasiProgressBar_run();
 
-                $.ajax({
-                  type: "GET",
-                  url: "{{ route('nota_pembelian_html') }}",
-                  data: {
-                    id_transaksi: id_transaksi,
-                  },
-                  dataType: "JSON",
-                  success: function (response) {
-                    
-                    if(response.kode == 404) {
-                      return toastError(response.pesan);
-                    }
-
-                    toastSuccess(response.pesan);
-                    printNotaPembelian(response.nota_pembelian);
-
-                  }, error: function (error) {
-                    toastError("Oops! Silahkan coba lagi!");
-                  }, complete: function () {
-
-                    animasiProgressBar_stop();
-                    $('.btnPrintDataPembelian').attr('disabled',false);
-
-                  }
-                });
+        $.ajax({
+          type: "GET",
+          url: "{{ route('nota_pembelian_html') }}",
+          data: {
+            id_transaksi: id_transaksi,
+          },
+          dataType: "JSON",
+          success: function (response) {
+            
+            if(response.kode == 404) {
+              return toastError(response.pesan);
             }
+
+            // cek jenis printer
+            if(modePrinter == 'hp') {
+              printNotaPembelian(response.nota_pembelian);
+
+            } else if(modePrinter == 'pc') {
+                var raw_data = response.raw_data;
+                // Panggil fungsi untuk mencetak receipt dengan data dari server
+                printReceiptRectaHost(
+                    raw_data.list_data_belanja,
+                    raw_data.id_transaksi,
+                    raw_data.total_belanja,
+                    raw_data.total_bayar,
+                    raw_data.kembalian,
+                    raw_data.timestamp,
+                    response.pesan
+                );
+                
+            } else {
+                toastError("Mode printer tidak dipilih!");
+            }
+
+          }, error: function (error) {
+            toastError("Oops! Silahkan coba lagi!");
+          }, complete: function () {
+
+            animasiProgressBar_stop();
+            $('.btnPrintDataPembelian').attr('disabled',false);
+
+          }
         });
-    });
-    function printNotaPembelian(HTMLarea) {
-        $('#html_print').html('');
-        $('#html_print').html(HTMLarea);
-        var element = document.getElementById('html_print').innerText
-        PrintNota(element);
-    }
-    function PrintNota(HTMLarea){
-        var S = "#Intent;scheme=rawbt;";
-        var P =  "package=ru.a402d.rawbtprinter;end;";
-        var textEncoded = encodeURI(HTMLarea);
-        window.location.href="intent:"+textEncoded+S+P;
-        $('#html_print').html('');
-    }
-    // STATUS PRINTER (LOCAL STORAGE)
-    function saveToLocalStorage() {
-        var selectedValue = $('#ModePrinter').val();
-        localStorage.setItem('printerMode', selectedValue);
-    } 
-    function loadFromLocalStorage() {
-        var savedValue = localStorage.getItem('printerMode');
-        if (savedValue) {
-            $('#ModePrinter').val(savedValue);
-        }
-    }
-    $(document).ready(function() {
-        loadFromLocalStorage();
-    
-        // Tambahkan event listener untuk menyimpan nilai saat elemen berubah
-        $('#ModePrinter').on('change', function() {
-            saveToLocalStorage();
-        });
+
     });
 
     // PROGRESSBAR
@@ -510,6 +486,6 @@
           ribuan = ribuan.join('.').split('').reverse().join('');
           return 'Rp ' + ribuan;
     }
-    </script>
+</script>
 
 @endsection

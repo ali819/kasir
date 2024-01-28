@@ -148,6 +148,14 @@
                       <span class="hide-menu">Data&nbsp;Pembelian</span>
                   </a>
               </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link btnModalPrinter" href="javascript:void(0)" data-toggle="modal" data-target="ModalPengaturanPrinter" aria-expanded="false">
+                    <span>
+                      <i class="ti ti-printer"></i>
+                    </span>
+                    <span class="hide-menu">Pengaturan&nbsp;Printer</span>
+                  </a>
+              </li>
               <!-- ============================= -->
               
             </ul>
@@ -248,8 +256,14 @@
     <script src="{{ asset('template/dist/libs/owl.carousel/dist/owl.carousel.min.js') }}"></script>
     <script src="{{ asset('template/dist/libs/datatables.net/js/jquery.dataTables.min.js') }}"></script>
 
+    @include('menu.script_printer_thermal')
+
     <script>
-        // SCRIPT CUSTOM
+        $(document).on('click','.btnModalPrinter', function() {
+          $('#ModalPengaturanPrinter').modal('show');
+          $(this).removeClass('active');
+        })
+        // SCRIPT TOAST & CONFIRMATION
         function toastSuccess(message) {
           Toastify({
               text: message,

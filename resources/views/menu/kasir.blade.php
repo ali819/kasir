@@ -53,14 +53,6 @@
                 </div>
             </div>
             
-            <div class="col-12">
-                <label for="ModePrinter" class=""><b>Pilih Device Printer</b></label>
-                <select name="modePrinter" id="ModePrinter" class="form-control">
-                    <option value="">- Pilih Mode Printer -</option>
-                    <option value="hp">Printer : Handphone ( Android, IOS, Tablet )</option>
-                    <option value="pc">Printer : PC ( Laptop / Komputer )</option>
-                </select>
-            </div>
         </div>
         <div class="w-100 position-relative overflow-hidden">
             <div class="py-3 border-bottom">
@@ -147,8 +139,6 @@
                         <div class="col-12">
                             <button type="button" class="btn btn-primary btnKonfirmasiPembelian" style="width:100%; font-weight:bold;"><i class="ti ti-receipt"></i>&emsp;Konfirmasi Pembelian</button>
                             <br>
-                            {{-- <br> --}}
-                            {{-- <a class="btn btn-outline-info text btnPrintNota" href="javascript:void(0)" style="width:100%"><i class="ti ti-printer"></i>&emsp;Print Nota Pembelian</a> --}}
                         </div>
 
                       </div>
@@ -324,7 +314,6 @@
                 toastError("Oops! Kategori barang tidak ditemukan!");
             }
         }
-
         
         // HITUNGAN + - PADA MODAL
         function hitunganTotalBelanja() {
@@ -546,7 +535,7 @@
             }, 500);
         });
 
-        // KONFIRMASI PEMBELIAN 
+        // KONFIRMASI PEMBELIAN & CETAK
         $(document).on('click','.btnKonfirmasiPembelian', function() {
             // validasi
             var modePrinter = $('#ModePrinter').val();
@@ -598,9 +587,25 @@
                         dataType: "JSON",
                         success: function (response) {
 
-                            toastSuccess(response.pesan);
-
-                            printNotaPembelian(response.nota_pembelian);
+                            // cek jenis printer
+                            if(modePrinter == 'hp') {
+                                printNotaPembelian(response.nota_pembelian);
+                            } else if(modePrinter == 'pc') {
+                                var raw_data = response.raw_data;
+                                // Panggil fungsi untuk mencetak receipt dengan data dari server
+                                printReceiptRectaHost(
+                                    raw_data.list_data_belanja,
+                                    raw_data.id_transaksi,
+                                    raw_data.total_belanja,
+                                    raw_data.total_bayar,
+                                    raw_data.kembalian,
+                                    raw_data.timestamp,
+                                    response.pesan
+                                );
+                                
+                            } else {
+                                toastError("Mode printer tidak dipilih! Silahkan cetak ulang pada menu pembelian!");
+                            }
 
                             $('#tabelListBelanja').html(`
                                 <tr class="listBelanjaanKosong">
@@ -610,6 +615,9 @@
                             $('.summaryTotalBayar').val('');
                             hitungTotalBayarKembalian();
                             changeTotalBelanja();
+
+                            // toast
+                            toastSuccess("Transaksi pembelian berhasil!");
 
                         }, error: function (error) {
                             toastError("Oops! Terjadi kesalahan. Silahkan coba lagi!")
@@ -621,112 +629,6 @@
                 }
             });
         });
-
-        // STATUS PRINTER (LOCAL STORAGE)
-        function saveToLocalStorage() {
-            var selectedValue = $('#ModePrinter').val();
-            localStorage.setItem('printerMode', selectedValue);
-        } 
-        function loadFromLocalStorage() {
-            var savedValue = localStorage.getItem('printerMode');
-            if (savedValue) {
-                $('#ModePrinter').val(savedValue);
-            }
-        }
-        $(document).ready(function() {
-            loadFromLocalStorage();
-
-            // Tambahkan event listener untuk menyimpan nilai saat elemen berubah
-            $('#ModePrinter').on('change', function() {
-                saveToLocalStorage();
-            });
-        });
-
-        // PRINT RAWBT ( https://www.rawbt.ru/start.html )
-        let html_print = 
-        `
-            <div class="col-12">
-                <h5>
-                    <br>
-                    <span id="notaNamaToko">NAMA TOKO</span> - <span id="notaAlamat">ALAMAT</span> 
-                </h5>
-                <p>
-                    <span id="notaIdTransaksi">TRX-13</span> <br> 
-                    <span id="notaTanggalPembelian">15 Januari 2024 18:10:05</span>
-                </p>
-                <p>
-                    - - - - - - - - - - - -
-                    <br>
-                    ( 1 ). Susu bubuk dancow coklat sehat anak 500ml
-                    <br>
-                    3 (Grosir) x Rp 15.000
-                    <br>
-                    <br>
-        
-                    ( 2 ). Odol Pepsodent 300gr
-                    <br>
-                    1 (Ecer) x Rp 10.000
-                    <br>
-                    <br>
-        
-                    ( 3 ). Beras Raja Lele
-                    <br>
-                    1 Kg x Rp 10.000
-                    <br>
-                    <br>
-                    - - - - - - - - - - - -
-                    <br>
-                    TOTAL BELANJA
-                    <br>
-                    <span id="notaTotalBelanja">Rp 35.000</span>
-                    <br>
-                    <br>
-                    - - - - - - - - - - - -
-                    <br>
-                    TOTAL BAYAR
-                    <br>
-                    <span id="notaTotalBayar">Rp 50.000</span>
-                    <br>
-                    <br>
-                    - - - - - - - - - - - -
-                    <br>
-                    KEMBALIAN
-                    <br>
-                    <span id="notaKembalian">Rp 15.000</span>
-                    <br>
-                    <br>
-                    - - - - - - - - - - - -
-                    <br>
-                </p>
-            </div>
-        `;
-        
-        function printNotaPembelian(HTMLarea) {
-            
-            customConfirm("Cetak Nota ?","Anda dapat mencetak ulang nota pembelian pada menu data pembelian.").then((confirmed) => { 
-                if(confirmed) {
-                    $('#html_print').html('');
-                    $('#html_print').html(HTMLarea);
-                    var element = document.getElementById('html_print').innerText
-                    PrintNota(element);
-                }
-            });
-        }
-
-        // $(document).on('click','.btnPrintNota', function() {
-        //     $('#html_print').html('');
-        //     $('#html_print').html(html_print);
-        //     var element = document.getElementById('html_print').innerText
-        //     PrintNota(element);
-        // });
-
-        function PrintNota(HTMLarea){
-            var S = "#Intent;scheme=rawbt;";
-            var P =  "package=ru.a402d.rawbtprinter;end;";
-            var textEncoded = encodeURI(HTMLarea);
-            window.location.href="intent:"+textEncoded+S+P;
-            $('#html_print').html('');
-        }
 
         // PROGRESSBAR
         function animasiProgressBar_run() {

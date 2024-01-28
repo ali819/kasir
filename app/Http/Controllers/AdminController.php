@@ -617,7 +617,17 @@ class AdminController extends Controller
             DB::table('data_pembelian_detail')->insert($data_pembelian_detail);
 
             // nota pembelian
+            // android (rawbt)
             $nota_pembelian = $this->HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp);
+            // pc / windows (recta host)
+            $raw_data = [
+                'list_data_belanja' => $list_data_belanja,
+                'id_transaksi' => $id_transaksi,
+                'total_belanja' => $total_belanja,
+                'total_bayar' => $total_bayar,
+                'kembalian' => $kembalian,
+                'timestamp' => $timestamp,
+            ];
 
             // Commit transaksi jika berhasil
             DB::commit();
@@ -625,6 +635,7 @@ class AdminController extends Controller
             return response()->json([
                 'kode' => 200,
                 'nota_pembelian' => $nota_pembelian,
+                'raw_data' => $raw_data,
                 'pesan' => 'Pembelian berhasil dikonfirmasi!'
             ]);
 
@@ -652,9 +663,11 @@ class AdminController extends Controller
             <div class="col-12">
             <h5>
                 <br>
-                <span id="notaNamaToko">NAMA TOKO</span> - <span id="notaAlamat">ALAMAT</span> 
+                <span id="notaNamaToko">TOKO SEMBAKO KARIYONO JAYA</span> - <span id="notaAlamat">JL RAYA PASAR CENTONG KEDIRI JAWA TIMUR INDONESIA</span> 
             </h5>
             <p>
+            - - - - - - - - - - - -
+                <br>
                 <span id="notaIdTransaksi">'.$id_transaksi.'</span> <br> 
                 <span id="notaTanggalPembelian">'.$timestamp.'</span>
             </p>
@@ -848,12 +861,22 @@ class AdminController extends Controller
         $kembalian = $data_pembelian->kembalian;
         $timestamp = $data_pembelian->created_at;
 
-
+        // android (rawbt)
         $nota_pembelian = $this->HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp);
+        // pc / windows (recta host)
+        $raw_data = [
+            'list_data_belanja' => $list_data_belanja,
+            'id_transaksi' => $id_transaksi,
+            'total_belanja' => $total_belanja,
+            'total_bayar' => $total_bayar,
+            'kembalian' => $kembalian,
+            'timestamp' => $timestamp,
+        ];
 
         return response()->json([
             'kode' => 200,
             'nota_pembelian' => $nota_pembelian,
+            'raw_data' => $raw_data,
             'pesan' => 'Mencetak nota pembelian',
         ]);
     }
