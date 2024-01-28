@@ -186,7 +186,7 @@ $(function () {
   // Zoomable Line Chart -------> LINE CHART
   var options_zoomable = {
     series: [{
-      name: "XYZ MOTORS",
+      name: "Penjualan",
       data: [{
           x: "02-10-2017 GMT",
           y: 34,

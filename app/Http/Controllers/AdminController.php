@@ -14,6 +14,48 @@ use Illuminate\Support\Facades\Validator;
 class AdminController extends Controller
 {
     //
+    public function dashboard()
+    {
+        // Menggunakan query builder untuk mengambil total jumlah pembelian per tanggal
+        $chartData = DB::table('data_pembelian_detail')
+            ->select(DB::raw('DATE(created_at) as tanggal'), DB::raw('SUM(total_harga) as jumlah'))
+            ->groupBy('tanggal')
+            ->orderBy('tanggal', 'desc')
+            ->limit(6)
+            ->get();
+
+            // dd($chartData);
+
+        // Mendapatkan tanggal-tanggal yang ada
+        $existingDates = $chartData->pluck('tanggal')->map(function ($date) {
+            return Carbon::parse($date)->isoFormat('D MMMM');
+        })->toArray();
+
+        // Mengisi tanggal yang hilang dengan nol
+        $allDates = collect(range(0, 5))->map(function ($index) use ($existingDates) {
+            $date = now()->subDays($index)->isoFormat('D MMMM');
+            return isset($existingDates[$index]) ? $existingDates[$index] : $date;
+        });
+
+        // Mengelompokkan data untuk chart
+        $xValues = $allDates->toArray();
+        $yValues = $chartData->pluck('jumlah')->toArray();
+        $barColors = array_fill(0, count($xValues), "#526efa");
+
+        $totalPenjualan = 'Rp ' . number_format($chartData->sum('jumlah'), 0, ',', '.');
+        $totalTransaksi = DB::table('data_pembelian_detail')
+            ->select('id_transaksi') 
+            ->whereDate('created_at', '>=', now()->subDays(5)->format('Y-m-d'))
+            ->groupBy('id_transaksi')
+            ->get()
+            ->count();
+        $totalBarangTerjual =  DB::table('data_pembelian_detail')
+        ->whereDate('created_at', '>=', now()->subDays(5)->format('Y-m-d'))
+        ->sum('qty'); 
+
+        return view('menu.dashboard', compact('xValues', 'yValues', 'barColors','totalPenjualan','totalTransaksi','totalBarangTerjual'));
+    }
+
     public function kasir()
     {
         $list_barang = DB::table('stok_barang')->select('id','nama_barang')->get();
@@ -549,6 +591,7 @@ class AdminController extends Controller
 
             $list_data_belanja = [];
             foreach ($groupedData as $index => $data) {
+                $index++;
                 $id_barang = $data['id_barang'];
                 $nama_barang = $data['nama_barang'];
                 $satuan = $data['satuan'];
@@ -844,7 +887,7 @@ class AdminController extends Controller
         // variabel di kirim
         $list_data_belanja = [];
         foreach($data_pembelian_detail as $index => $item) {
-
+            $index++;
             $list_data_belanja[] = [
                 'nomor' => $index,
                 'nama_barang' => $item->nama_barang,
