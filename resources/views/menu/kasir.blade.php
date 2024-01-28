@@ -92,7 +92,7 @@
                 {{--  --}}
                 <section id="steps-uid-0-p-0" role="tabpanel" aria-labelledby="steps-uid-0-h-0" class="body current" aria-hidden="false" style="">
                     <div class="table-responsive">
-                        <table class="table align-middle text-nowrap mb-0">
+                        <table class="table align-middle text-nowrap mb-0" style="background-color:#f1f1f1;">
                           <thead class="mb-0 fs-4">
                             <tr>
                               <th>#&nbsp;List&nbsp;Barang</th>
