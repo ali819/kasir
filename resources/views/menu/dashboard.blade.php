@@ -66,7 +66,7 @@
 </div>
 
 {{-- MODAL --}}
-<div class="modal fade" id="ModalDetailPenjualan" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="" style="display: none;" aria-hidden="true">
+<div class="modal fade" id="ModalDetailPenjualan" data-bs-backdrop="dynamic" data-bs-keyboard="false" tabindex="-1" aria-labelledby="" style="display: none;" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header d-flex align-items-center">
@@ -188,9 +188,8 @@
 {{-- GRAFIK --}}
 <script src="{{ asset('template/chart/chart.min.js') }}"></script>
 <script>
-
-  var xValues = @json($xValues);
-  var yValues = @json($yValues);
+  var xValues = @json(array_values($xValues));
+  var yValues = @json(array_values($yValues));
   var barColors = @json($barColors);
 
   new Chart("myChart", {
@@ -226,7 +225,7 @@
     var tabel_detail_pembelian = $("#tabel_detail_pembelian").DataTable({
         dom: 'lrtip',
         order: [
-            [0,'DESC']
+            [6,'DESC']
         ],
         autoWidth: false,
         language: {

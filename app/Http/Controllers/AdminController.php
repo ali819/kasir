@@ -18,29 +18,32 @@ class AdminController extends Controller
     {
         // Menggunakan query builder untuk mengambil total jumlah pembelian per tanggal
         $chartData = DB::table('data_pembelian_detail')
-            ->select(DB::raw('DATE(created_at) as tanggal'), DB::raw('SUM(total_harga) as jumlah'))
-            ->groupBy('tanggal')
-            ->orderBy('tanggal', 'desc')
-            ->limit(6)
-            ->get();
+        ->select(DB::raw('DATE(created_at) as tanggal'), DB::raw('SUM(total_harga) as jumlah'))
+        ->where('created_at', '>=', now()->subDays(6)->format('Y-m-d')) // Ambil data 6 hari terakhir
+        ->groupBy('tanggal')
+        ->orderBy('tanggal', 'DESC') // Urutkan berdasarkan tanggal secara desc
+        ->get();
 
-            // dd($chartData);
-
-        // Mendapatkan tanggal-tanggal yang ada
-        $existingDates = $chartData->pluck('tanggal')->map(function ($date) {
-            return Carbon::parse($date)->isoFormat('D MMMM');
-        })->toArray();
-
-        // Mengisi tanggal yang hilang dengan nol
-        $allDates = collect(range(0, 5))->map(function ($index) use ($existingDates) {
-            $date = now()->subDays($index)->isoFormat('D MMMM');
-            return isset($existingDates[$index]) ? $existingDates[$index] : $date;
+        // Buat array tanggal dengan subDay(6)
+        $arrayTanggal = collect(range(0, 5))->map(function ($index) {
+            return now()->subDays($index)->format('Y-m-d');
+        });
+        $arrayTanggalIso = collect(range(0, 5))->map(function ($index) {
+            return now()->subDays($index)->isoFormat('D MMMM');
         });
 
+        // Buat array yValues, isi dengan 0 jika tanggal tidak ditemukan
+        $jumlahValues = $arrayTanggal->map(function ($date) use ($chartData) {
+            $chartItem = $chartData->firstWhere('tanggal', Carbon::parse($date)->format('Y-m-d'));
+            return $chartItem ? $chartItem->jumlah : "0";
+        })->toArray();
+
         // Mengelompokkan data untuk chart
-        $xValues = $allDates->toArray();
-        $yValues = $chartData->pluck('jumlah')->toArray();
+        $xValues = $arrayTanggalIso->toArray();
+        $yValues = $jumlahValues;
         $barColors = array_fill(0, count($xValues), "#526efa");
+        // dd($jumlahValues);
+        
 
         $totalPenjualan = 'Rp ' . number_format($chartData->sum('jumlah'), 0, ',', '.');
         $totalTransaksi = DB::table('data_pembelian_detail')
@@ -50,8 +53,8 @@ class AdminController extends Controller
             ->get()
             ->count();
         $totalBarangTerjual =  DB::table('data_pembelian_detail')
-        ->whereDate('created_at', '>=', now()->subDays(5)->format('Y-m-d'))
-        ->sum('qty'); 
+            ->whereDate('created_at', '>=', now()->subDays(5)->format('Y-m-d'))
+            ->sum('qty'); 
 
         return view('menu.dashboard', compact('xValues', 'yValues', 'barColors','totalPenjualan','totalTransaksi','totalBarangTerjual'));
     }
