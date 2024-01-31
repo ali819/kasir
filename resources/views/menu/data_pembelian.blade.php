@@ -146,7 +146,7 @@
                   <label class=""><b>Total</b></label>
                   <hr>
                   <label class=""><b>Bayar</b></label>
-                  <br>
+                  <hr>
                   <label class=""><b>Kembalian</b></label>
                   <hr>
                 </div>
@@ -155,7 +155,7 @@
                     <label class="detailTotalBelanja">Rp 0</label>
                     <hr>
                     <label class="detailTotalBayar">Rp 0</label>
-                    <br>
+                    <hr>
                     <label class="detailKembalian">Rp 0</label>
                     <hr>
                 </div>

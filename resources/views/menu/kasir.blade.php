@@ -624,6 +624,7 @@
                         }, complete: function () {
                             $('.btnKonfirmasiPembelian').html(btnDefault);
                             $('.btnKonfirmasiPembelian').attr('disabled',false);
+                            topFunction();
                         }
                     });
                 }
@@ -636,6 +637,11 @@
         }
         function animasiProgressBar_stop() {
             $('.animasiProgressBar').css('width', '0%');
+        }
+
+        function topFunction() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
         }
 
         // FORMAT PENULISAN
