@@ -17,16 +17,22 @@
             <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
               <div class="mb-3 mb-sm-0">
                 <h3 class=" fw-semibold">Data Penjualan</h3>
-                <p class="card-subtitle mb-0">Grafik data satu minggu terakhir</p>
+                <p class="card-subtitle mb-0">Grafik data minggu terakhir ( 6 hari terakhir )</p>
               </div>
               <div>
                 {{--  --}}
+                <select id="ChartShow" class="form-control">
+                  <option value="bar">Tampilan Grafik Omzet</option>
+                  <option value="pie">Tampilan Grafik Terlaris</option>
+                </select>
               </div>
             </div>
             <div class="row align-items-center">
               <div class="col-lg-8 col-md-8">
                 {{--  --}}
-                <canvas id="myChart" style="width:100%;max-width:800px"></canvas>
+                <canvas id="myBarChart" style="display: block; margin: auto; width:100%;max-width:800px"></canvas>
+                <canvas id="myPieChart" style="display: block; margin: auto; width:100%;max-width:400px" hidden></canvas>
+                {{--  --}}
               </div>
               <div class="col-lg-4 col-md-4">
                 <div class="d-flex align-items-center mb-4 pb-1">
@@ -35,7 +41,7 @@
                   </div>
                   <div>
                     <h4 class="mb-0 fs-7 fw-semibold">{{ $totalPenjualan }}</h4>
-                    <p class="fs-3 mb-0">Omzet Penjualan</p>
+                    <p class="fs-3 mb-0">Omzet ( 6 hari terakhir )</p>
                   </div>
                 </div>
                 <div>
@@ -185,19 +191,69 @@
   </div>
 </div>
 
+{{-- PILIHAN --}}
+<script>
+  $(document).on('change','#ChartShow', function() {
+      var selectedOption = $('#ChartShow').val();
+      chartShow(selectedOption);
+      saveChartTypePreference(selectedOption);
+  });
+  function chartShow(select) {
+    if(select === 'pie') {
+      $('#myPieChart').attr('hidden',false);
+      $('#myBarChart').attr('hidden',true);
+    }
+    if(select === 'bar') {
+      $('#myPieChart').attr('hidden',true);
+      $('#myBarChart').attr('hidden',false);
+    }
+  }
+  $(document).ready(function () {
+    var savedChartType = getChartTypePreference();
+    $('#ChartShow').val(savedChartType);
+    chartShow(savedChartType);
+  });
+
+  // Function to save the selected chart type to local storage
+  function saveChartTypePreference(chartType) {
+    localStorage.setItem('chartType', chartType);
+  }
+
+  // Function to retrieve the selected chart type from local storage
+  function getChartTypePreference() {
+    return localStorage.getItem('chartType') || 'pie'; // Default to 'pie' if not set
+  }
+</script>
+
 {{-- GRAFIK --}}
 <script src="{{ asset('template/chart/chart.min.js') }}"></script>
 <script>
+  // BAR CHART
   var xValues = @json(array_values($xValues));
   var yValues = @json(array_values($yValues));
-  var barColors = @json($barColors);
 
-  new Chart("myChart", {
+  new Chart("myBarChart", {
     type: "bar",
     data: {
       labels: xValues,
       datasets: [{
-        backgroundColor: barColors,
+        backgroundColor: [
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+          'rgba(54, 162, 235, 0.2)',
+        ],
+        borderColor: [
+          'rgb(54, 162, 235)',
+          'rgb(54, 162, 235)',
+          'rgb(54, 162, 235)',
+          'rgb(54, 162, 235)',
+          'rgb(54, 162, 235)',
+          'rgb(54, 162, 235)',
+        ],
+        borderWidth: 1,
         data: yValues
       }]
     },
@@ -208,6 +264,34 @@
         text: "Total omzet (Rp) per tanggal"
       }
     }
+  });
+</script>
+@php
+  $xValuesPie = $topProducts->pluck('nama_barang')->toArray();
+  $yValuesPie = $topProducts->pluck('total_qty')->toArray();
+  $barColorsPie = ['#b91d47', '#00aba9', '#2b5797', '#e8c3b9', '#1e7145'];
+@endphp
+<script>
+  // PIE CHART
+  const xValuesPie = @json($xValuesPie);
+  const yValuesPie = @json($yValuesPie);
+  const barColorsPie = @json($barColorsPie);
+
+  new Chart("myPieChart", {
+      type: "pie",
+      data: {
+          labels: xValuesPie,
+          datasets: [{
+              backgroundColor: barColorsPie,
+              data: yValuesPie
+          }]
+      },
+      options: {
+          title: {
+              display: true,
+              text: "Produk paling banyak di jual ( 6 hari terakhir )"
+          }
+      }
   });
 </script>
 

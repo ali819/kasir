@@ -41,11 +41,8 @@ class AdminController extends Controller
         // Mengelompokkan data untuk chart
         $xValues = $arrayTanggalIso->toArray();
         $yValues = $jumlahValues;
-        $barColors = array_fill(0, count($xValues), "#526efa");
-        // dd($jumlahValues);
-        
 
-        $totalPenjualan = 'Rp ' . number_format($chartData->sum('jumlah'), 0, ',', '.');
+        $totalPenjualan = 'Rp ' . number_format(array_sum($jumlahValues), 0, ',', '.');
         $totalTransaksi = DB::table('data_pembelian_detail')
             ->select('id_transaksi') 
             ->whereDate('created_at', '>=', now()->subDays(5)->format('Y-m-d'))
@@ -56,7 +53,16 @@ class AdminController extends Controller
             ->whereDate('created_at', '>=', now()->subDays(5)->format('Y-m-d'))
             ->sum('qty'); 
 
-        return view('menu.dashboard', compact('xValues', 'yValues', 'barColors','totalPenjualan','totalTransaksi','totalBarangTerjual'));
+        // produk terlaris
+        $topProducts = DB::table('data_pembelian_detail')
+        ->select('nama_barang', DB::raw('SUM(qty) as total_qty'))
+        ->where('created_at', '>=', now()->subDays(6)->format('Y-m-d'))
+        ->groupBy('nama_barang')
+        ->orderByDesc('total_qty')
+        ->limit(5)
+        ->get(); 
+
+        return view('menu.dashboard', compact('xValues', 'yValues','totalPenjualan','totalTransaksi','totalBarangTerjual','topProducts'));
     }
 
     public function kasir()
