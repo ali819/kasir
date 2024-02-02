@@ -131,6 +131,20 @@
         window.location.href="intent:"+textEncoded+S+P;
         $('#html_print').html('');
     }
+
+    // UNTUK BUKA CASH DRAWER SETELAH PRINT (OTOMATIS)
+    function PrintNotaWithCashDrawer(HTMLarea) {
+        var S = "#Intent;scheme=rawbt;";
+        var P = "package=ru.a402d.rawbtprinter;end;";
+        // Perintah ESC/POS untuk membuka laci
+        var openDrawerCommand = String.fromCharCode(27, 112, 0); // Sesuaikan dengan perintah yang benar untuk perangkat Anda
+        // Tambahkan perintah membuka laci ke HTMLarea
+        var htmlWithOpenDrawer = HTMLarea + openDrawerCommand;
+        var textEncoded = encodeURI(htmlWithOpenDrawer);
+        window.location.href = "intent:" + textEncoded + S + P;
+
+        $('#html_print').html('');
+    }
     
     // PRINT PC (RECTA HOST)
     function printReceiptRectaHost(list_data_belanja, id_transaksi, total_belanja, total_bayar, kembalian, timestamp, toast_message) {
