@@ -564,6 +564,7 @@ class AdminController extends Controller
         $total_belanja = $request->total_belanja;
         $total_bayar = $request->total_bayar;
         $kembalian = $request->kembalian;
+        $pembeli = $request->pembeli;
 
         // Mengelompokkan data berdasarkan indeks dinamis
         $groupedData = [];
@@ -656,7 +657,7 @@ class AdminController extends Controller
             // 
             $data_pembelian[] = [
                 'id_transaksi' => $id_transaksi,
-                'pembeli' => null,
+                'pembeli' => $pembeli,
                 'total_belanja' => $total_belanja,
                 'total_bayar' => $total_bayar,
                 'kembalian' => $kembalian,
@@ -670,8 +671,14 @@ class AdminController extends Controller
 
             // nota pembelian
             // android (rawbt)
-            $nota_pembelian = $this->HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp);
+            $dataToko = $this->informasiToko();
+            $nama_toko = $dataToko['nama_toko'];
+            $alamat_toko = $dataToko['alamat_toko'];
+            $nota_pembelian = $this->HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp, $pembeli, $nama_toko, $alamat_toko);
             // pc / windows (recta host)
+            if(!$pembeli) {
+                $pembeli = '-';
+            }
             $raw_data = [
                 'list_data_belanja' => $list_data_belanja,
                 'id_transaksi' => $id_transaksi,
@@ -679,6 +686,9 @@ class AdminController extends Controller
                 'total_bayar' => $total_bayar,
                 'kembalian' => $kembalian,
                 'timestamp' => $timestamp,
+                'pembeli' => $pembeli,
+                'nama_toko' => $nama_toko,
+                'alamat_toko' => $alamat_toko,
             ];
 
             // Commit transaksi jika berhasil
@@ -707,7 +717,17 @@ class AdminController extends Controller
     {
         return 'Rp ' . number_format($amount, 0, ',', '.');
     }
-    private function HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp) {
+    private function HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp, $pembeli, $nama_toko, $alamat_toko) {
+
+        // cek nama pembeli
+        if(!$pembeli) {
+            $pembeli = '-';
+        }
+
+        // Jumlah dash yang diinginkan
+        $jumlah_dash = 16;
+        // Buat string dash dengan mengulang karakter '-' sebanyak jumlah yang diinginkan
+        $dash = str_repeat('- ', $jumlah_dash);
 
         // header nota pembelian
         $nota_pembelian = 
@@ -715,16 +735,16 @@ class AdminController extends Controller
             <div class="col-12">
             <h5>
                 <br>
-                <span id="notaNamaToko">TOKO SEMBAKO KARIYONO JAYA</span> - <span id="notaAlamat">JL RAYA PASAR CENTONG KEDIRI JAWA TIMUR INDONESIA</span> 
+                <span id="notaNamaToko">'.$nama_toko.'</span> - <span id="notaAlamat">'.$alamat_toko.'</span> 
             </h5>
             <p>
-            - - - - - - - - - - - -
+            '.$dash.'
                 <br>
                 <span id="notaIdTransaksi">'.$id_transaksi.'</span> <br> 
                 <span id="notaTanggalPembelian">'.$timestamp.'</span>
             </p>
             <p>
-                - - - - - - - - - - - -
+                '.$dash.'
                 <br>
         ';
 
@@ -736,11 +756,12 @@ class AdminController extends Controller
             $total_qty = $item['total_qty'];
             $satuan = $item['satuan'];
             $harga = $item['harga'];
+            $sub_total_harga = $total_qty * $harga;
 
             $nota_pembelian .='
-                    ( '.$nomor.' ). '.$nama_barang.'
+                    '.$nama_barang.' ('.$satuan.')
                     <br>
-                    '.$total_qty.' ('.$satuan.') x '.$this->formatRupiah($harga).'
+                    '.$total_qty.' x '.$harga.' : '.$this->formatRupiah($sub_total_harga).'
                     <br>
                     <br>
             ';
@@ -748,28 +769,35 @@ class AdminController extends Controller
 
         // footer nota pembelian
         $nota_pembelian .=' 
-            - - - - - - - - - - - -
+                    '.$dash.'
+                    <br>
+                    NAMA PEMBELI
+                    <br>
+                    <span id="notaNamaPembeli">'.$pembeli.'</span>
+                    <br>
+                    <br>
+                    '.$dash.'
                     <br>
                     TOTAL BELANJA
                     <br>
                     <span id="notaTotalBelanja">'.$this->formatRupiah($total_belanja).'</span>
                     <br>
                     <br>
-                    - - - - - - - - - - - -
+                    '.$dash.'
                     <br>
                     TOTAL BAYAR
                     <br>
                     <span id="notaTotalBayar">'.$this->formatRupiah($total_bayar).'</span>
                     <br>
                     <br>
-                    - - - - - - - - - - - -
+                    '.$dash.'
                     <br>
                     KEMBALIAN
                     <br>
                     <span id="notaKembalian">'.$this->formatRupiah($kembalian).'</span>
                     <br>
                     <br>
-                    - - - - - - - - - - - -
+                    '.$dash.'
                     <br>
                 </p>
             </div>
@@ -916,9 +944,16 @@ class AdminController extends Controller
         $total_bayar = $data_pembelian->total_bayar;
         $kembalian = $data_pembelian->kembalian;
         $timestamp = $data_pembelian->created_at;
+        $pembeli = $data_pembelian->pembeli;
+        if(!$pembeli) {
+            $pembeli = '-';
+        }
+        $dataToko = $this->informasiToko();
+        $nama_toko = $dataToko['nama_toko'];
+        $alamat_toko = $dataToko['alamat_toko'];
 
         // android (rawbt)
-        $nota_pembelian = $this->HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp);
+        $nota_pembelian = $this->HTMLNotaPembelian($list_data_belanja, $id_transaksi, $total_belanja, $total_bayar, $kembalian, $timestamp, $pembeli, $nama_toko, $alamat_toko);
         // pc / windows (recta host)
         $raw_data = [
             'list_data_belanja' => $list_data_belanja,
@@ -927,6 +962,9 @@ class AdminController extends Controller
             'total_bayar' => $total_bayar,
             'kembalian' => $kembalian,
             'timestamp' => $timestamp,
+            'pembeli' => $pembeli,
+            'nama_toko' => $nama_toko,
+            'alamat_toko' => $alamat_toko,
         ];
 
         return response()->json([
@@ -974,6 +1012,46 @@ class AdminController extends Controller
             'barang_terjual' => $barang_terjual,
             'pesan' => 'Data : '.$tanggal_formatted,
         ]);
+    }
+
+    public function informasi_toko()
+    {
+        
+        $data = $this->informasiToko();
+        $nama_toko = $data['nama_toko'];
+        $alamat_toko = $data['alamat_toko'];
+
+        return view('menu.informasi_toko',compact('nama_toko','alamat_toko'));
+    }
+    public function update_informasi_toko(Request $request)
+    {
+        $nama_toko = $request->nama_toko;
+        $alamat_toko = $request->alamat_toko; 
+
+        Cache::forever('toko_info', ['nama_toko' => $nama_toko, 'alamat_toko' => $alamat_toko]);
+
+        return response()->json([
+            'kode' => 200,
+            'pesan' => 'Berhasil diperbarui !',
+        ]);
+    }
+
+    private function informasiToko() {
+        $informasiToko = Cache::get('toko_info');
+        if ($informasiToko === null) {
+            $nama_toko = 'NAMA TOKO';
+            $alamat_toko = 'ALAMAT';
+        } else {
+            $nama_toko = $informasiToko['nama_toko'];
+            $alamat_toko = $informasiToko['alamat_toko'];
+        }
+
+        $data = [
+            'nama_toko' => $nama_toko,
+            'alamat_toko' => $alamat_toko,
+        ];
+
+        return $data;
     }
 
 }

@@ -191,7 +191,7 @@
             Toastify({
                 text: "Email / Password Anda Salah!",
                 style: {
-                    background: "#ce0006",
+                    background: "linear-gradient(to right, #f50707, #ff8f57)",
                 },
                 duration: 4000,
                 close: false,
@@ -207,7 +207,7 @@
         Toastify({
             text: pesan,
             style: {
-                background: "#ce0006",
+                background: "linear-gradient(to right, #f50707, #ff8f57)",
             },
             duration: 2000,
             close: false,

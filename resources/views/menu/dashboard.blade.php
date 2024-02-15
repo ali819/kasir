@@ -311,6 +311,10 @@
         order: [
             [6,'DESC']
         ],
+        lengthMenu: [ 
+          [10, 25, 50, 100, 500], 
+          [10, 25, 50, 100, 500] 
+        ],
         autoWidth: false,
         language: {
             "sProcessing":   "Sedang memproses...",

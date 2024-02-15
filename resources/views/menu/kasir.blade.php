@@ -62,8 +62,8 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-2">
-                                <label for="cariNamaBarang" class=""><b>Pilih Barang (Autocomplete)</b></label>
-                                <input type="search" class="form-control" id="cariNamaBarang" name="cariNamaBarang" placeholder="Ketik nama barang.." list="listBarang" required>
+                                <label for="cariNamaBarang" class=""><b>Pilih Barang ( autocomplete )</b></label>
+                                <input type="search" class="form-control" id="cariNamaBarang" name="cariNamaBarang" placeholder="Ketik nama barang.." list="listBarang">
                                 <datalist id="listBarang">
                                     @foreach ($list_barang as $item)
                                         <option data-id="{{ $item->id }}" data-value="{{ strtolower($item->nama_barang) }}" value="{{ $item->nama_barang }}">
@@ -95,9 +95,9 @@
                         <table class="table align-middle text-nowrap mb-0" style="background-color:#f1f1f1;">
                           <thead class="mb-0 fs-4">
                             <tr>
-                              <th>#&nbsp;List&nbsp;Barang</th>
-                              <th>#&nbsp;Jumlah&nbsp;Beli</th>
-                              <th class="text-end">#&nbsp;Harga</th>
+                              <th>List&nbsp;Barang</th>
+                              <th>Jumlah&nbsp;Beli</th>
+                              <th class="text-end">Harga</th>
                             </tr>
                           </thead>
                           <tbody id="tabelListBelanja">
@@ -123,7 +123,10 @@
                             </p>
                             <h2 style="margin-top:5px; color:#606060; font-weight:bold;" class="summaryTotalBayarRp">Rp 0</h2>
                             <h6 class="mb-0 fs-4 fw-semibold text-danger">
-                                <input type="number" class="form-control summaryTotalBayar" placeholder="Nominal Bayar ..">
+                                <input type="number" style="font-weight:normal" class="form-control summaryTotalBayar" placeholder="Nominal Bayar ..">
+                            </h6>
+                            <h6 class="mb-0 fs-4 mt-2">
+                                <input type="text" style="font-weight:normal" class="form-control summaryPembeli" name="pembeli" placeholder="Nama pembeli ( opsional ) ..">
                             </h6>
                         </div>
                         <div class="col-12">
@@ -206,6 +209,10 @@
         $('#FormListbarang').on('submit',function(event) {
             event.preventDefault();
             var value = $('#cariNamaBarang').val().toLowerCase();
+            if(value === '') {
+                toastError("Nama barang tidak boleh kosong!");
+                return;
+            }
             var selectedOption = $("#listBarang option[data-value='" + value + "']");
             if (selectedOption.length > 0) {
                 var id = selectedOption.data("id");
@@ -279,7 +286,7 @@
 
                 // setting ke modal
                 $('#cariNamaBarang').val('');
-                toastSuccess(nama_barang);
+                // toastSuccess(nama_barang);
                 $('#tambahListNamaBarang').html(nama_barang);
                 $('#ModalTambahKeList').modal('show');
                 
@@ -305,7 +312,7 @@
 
                 // setting ke modal
                 $('#cariNamaBarang').val('');
-                toastSuccess(nama_barang);
+                // toastSuccess(nama_barang);
                 $('#tambahListNamaBarang').html(nama_barang);
                 $('#ModalTambahKeList').modal('show');
 
@@ -573,6 +580,7 @@
                     var total_belanja = totalBelanja;
                     var total_bayar = totalBayar;
                     var kembalian = $('.summaryKembalian').attr('data-total-kembalian');
+                    var pembeli = $('.summaryPembeli').val();
 
                     $.ajax({
                         type: "POST",
@@ -583,6 +591,7 @@
                             total_belanja: total_belanja,
                             total_bayar: total_bayar,
                             kembalian: kembalian,
+                            pembeli: pembeli,
                         },
                         dataType: "JSON",
                         success: function (response) {
@@ -600,6 +609,9 @@
                                     raw_data.total_bayar,
                                     raw_data.kembalian,
                                     raw_data.timestamp,
+                                    raw_data.pembeli,
+                                    raw_data.nama_toko,
+                                    raw_data.alamat_toko,
                                     response.pesan
                                 );
                                 
@@ -613,6 +625,7 @@
                                 </tr>
                             `);
                             $('.summaryTotalBayar').val('');
+                            $('.summaryPembeli').val('');
                             hitungTotalBayarKembalian();
                             changeTotalBelanja();
 

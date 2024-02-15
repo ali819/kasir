@@ -64,12 +64,17 @@
                 <input type="number" class="form-control" id="cariTotalBelanja" name="cariTotalBelanja" placeholder="Total belanja .." autocomplete="off">
             </div>
         </div>
-        <div class="col-12">  
+        <div class="col-6">  
             <div class="mb-3">
                 <input type="date" class="form-control" id="cariTanggalBeli" name="cariTanggalBeli" placeholder="Tanggal .." autocomplete="off">
             </div>
-          </div>
-          <div class="col-12">
+        </div>
+        <div class="col-6">  
+            <div class="mb-3">
+                <input type="text" class="form-control" id="cariPembeli" name="cariPembeli" placeholder="Pembeli .." autocomplete="off">
+            </div>
+        </div>
+        <div class="col-12">
             <div class="progress">
               <div class="progress-bar progress-bar-striped bg-primary progress-bar-animated animasiProgressBar" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 0%"></div>
             </div>
@@ -84,7 +89,7 @@
           <table class="table border text-nowrap customize-table mb-0 align-middle" id="tabel_data_pembelian">
             <thead class="text-dark fs-4">
               <tr>
-                <th><h6 class="fs-4 fw- mb-0">#</h6></th>
+                <th><h6 class="fs-4 fw- mb-0"><input type="checkbox" id="cbHeaderDataPembelian"></h6></th>
                 <th><h6 class="fs-4 fw- mb-0">Detail&nbsp;Pembelian</h6></th>
                 <th><h6 class="fs-4 fw- mb-0">Pilihan</h6></th>
               </tr>
@@ -143,6 +148,8 @@
                 </div>
                 <div class="col-4">
                   
+                  <label class=""><b>Pembeli</b></label>
+                  <hr>
                   <label class=""><b>Total</b></label>
                   <hr>
                   <label class=""><b>Bayar</b></label>
@@ -152,6 +159,8 @@
                 </div>
                 <div class="col-8">
                     
+                    <label class="detailPembeli">?</label>
+                    <hr>
                     <label class="detailTotalBelanja">Rp 0</label>
                     <hr>
                     <label class="detailTotalBayar">Rp 0</label>
@@ -180,7 +189,11 @@
         var tabel_data_pembelian = $("#tabel_data_pembelian").DataTable({
             dom: 'lrtip',
             order: [
-                [0,'DESC']
+                [2,'DESC']
+            ],
+            lengthMenu: [ 
+              [10, 25, 50, 100, 500], 
+              [10, 25, 50, 100, 500] 
             ],
             autoWidth: false,
             language: {
@@ -210,7 +223,7 @@
                 {
                     data: 'id',
                     className: 'clickableCell',
-                    orderable: true,
+                    orderable: false,
                     render: function(data, type, row, meta) {
                         return `<input type="checkbox" class="dataIdPembelianBarang" data-id="${data}" data-id-transaksi="${row.id_transaksi}">`;
                     }
@@ -221,13 +234,17 @@
                         var id_transaksi = row.id_transaksi;
                         var total_belanja = row.total_belanja;
                         var tanggal = row.formatted_date;
+                        var pembeli = row.pembeli;
+                        if(!pembeli) {
+                          pembeli = '?';
+                        }
 
                         var views = `
                             <div class="d-flex align-items-center">
                                 <div class="ms-3" style="margin-left: 0rem !important;">
                                 <h6 class="fw-semibold mb-0 fs-4">${trimText(id_transaksi)}</h6>
                                 <p class="mb-0">${tanggal}</p>
-                                <p class="mb-0 mt-1">[&emsp;<b>${formatRupiah(total_belanja)}</b>&emsp;]</p>
+                                <p class="mb-0 mt-1">[&emsp;${pembeli}&emsp;-&emsp;<b>${formatRupiah(total_belanja)}</b>&emsp;]</p>
                                 </div>
                             </div>
                         `;
@@ -237,10 +254,10 @@
                 },
                 {
                     data: 'id',
-                    orderable: false,
+                    orderable: true,
                     render: function(data, type, row, meta) {
                         var buttonList = `
-                        <button type="button" class="btnEditDataPembelian d-inline-flex align-items-center justify-content-center btn btn-primary btn-circle btn-lg" data-id="${row.id}" data-id-transaksi="${row.id_transaksi}">
+                        <button type="button" class="btnEditDataPembelian d-inline-flex align-items-center justify-content-center btn btn-primary btn-circle btn-lg" data-pembeli="${row.pembeli}" data-id="${row.id}" data-id-transaksi="${row.id_transaksi}">
                             <i class="ti ti-eye"></i>
                         </button>
                         <button type="button" class="btnPrintDataPembelian d-inline-flex align-items-center justify-content-center btn btn-info btn-circle btn-lg" data-id="${row.id}" data-id-transaksi="${row.id_transaksi}">
@@ -257,6 +274,10 @@
                 },
                 {
                   data: 'total_belanja',
+                  visible: false
+                },
+                {
+                  data: 'pembeli',
                   visible: false
                 }
         
@@ -290,6 +311,14 @@
           animasiProgressBar_run();
           tabel_data_pembelian.column(3).search($('#cariTanggalBeli').val()).draw();
         });
+        let cariPembeli = null;
+        $('#cariPembeli').on('input', function() {
+            clearTimeout(cariPembeli);
+            cariPembeli = setTimeout( function() {
+              animasiProgressBar_run();
+              tabel_data_pembelian.column(5).search($('#cariPembeli').val()).draw();
+            }, 500);
+        });
 
         $('#tabel_data_pembelian tbody').on('click', '.clickableCell', function (event) {
             // Check if the click occurred on a button or input checkbox
@@ -301,6 +330,18 @@
             checkbox.prop('checked', !checkbox.prop('checked'));
         });
 
+        // Ketika checkbox header di-klik
+        $('#cbHeaderDataPembelian').on('click', function() {
+            // Periksa apakah checkbox header di-check atau tidak
+            var isChecked = $(this).prop('checked');
+
+            // Temukan semua checkbox di setiap baris
+            $('.dataIdPembelianBarang').each(function() {
+                // Atur properti checked sesuai dengan status checkbox header
+                $(this).prop('checked', isChecked);
+            });
+        });
+
     });
 
     // LEMPAR KE MODAL
@@ -308,6 +349,10 @@
 
         $('.btnEditDataPembelian').attr('disabled',true);
         var id_transaksi = $(this).attr('data-id-transaksi');
+        var pembeli = $(this).attr('data-pembeli');
+        if(!pembeli || pembeli === 'null') {
+          pembeli = '?';
+        }
         animasiProgressBar_run();
 
         $.ajax({
@@ -333,6 +378,7 @@
                 $('.detailTotalBelanja').html(total_belanja);
                 $('.detailTotalBayar').html(total_bayar);
                 $('.detailKembalian').html(kembalian);
+                $('.detailPembeli').html(pembeli);
 
                 $('#formDetailListPembelian').html('');
                 $.each(list, function (index, detail) {
@@ -353,7 +399,7 @@
                 toastError("Oops! Terjadi kesalahan. Coba lagi!");
 
             }, complete: function () {
-              animasiProgressBar_stop();
+                animasiProgressBar_stop();
                 $('.btnEditDataPembelian').attr('disabled',false);
             }
         });
@@ -446,6 +492,9 @@
                     raw_data.total_bayar,
                     raw_data.kembalian,
                     raw_data.timestamp,
+                    raw_data.pembeli,
+                    raw_data.nama_toko,
+                    raw_data.alamat_toko,
                     response.pesan
                 );
                 

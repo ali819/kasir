@@ -127,7 +127,7 @@
     function PrintNota(HTMLarea){
         var S = "#Intent;scheme=rawbt;";
         var P =  "package=ru.a402d.rawbtprinter;end;";
-        var textEncoded = encodeURI(HTMLarea);
+        var textEncoded = encodeURI(HTMLarea);        
         window.location.href="intent:"+textEncoded+S+P;
         $('#html_print').html('');
     }
@@ -147,22 +147,28 @@
     }
     
     // PRINT PC (RECTA HOST)
-    function printReceiptRectaHost(list_data_belanja, id_transaksi, total_belanja, total_bayar, kembalian, timestamp, toast_message) {
+    function printReceiptRectaHost(list_data_belanja, id_transaksi, total_belanja, total_bayar, kembalian, timestamp, pembeli, nama_toko, alamat_toko, toast_message) {
         var app_key = $('#rectaHostAppKey').val();
         var app_port = $('#rectaHostAppPort').val();
         customConfirm("Cetak Nota ?","Anda dapat mencetak ulang nota pembelian pada menu data pembelian.").then((confirmed) => { 
             if(confirmed) {
                 toastSuccess(toast_message);
+
+                // Jumlah dash yang diinginkan
+                // Buat string dash dengan mengulang karakter '-' sebanyak jumlah yang diinginkan
+                var jumlahDash = 16;
+                var dash = "- ".repeat(jumlahDash);
+                console.log(dash);
     
                 var printer = new Recta(app_key, app_port);
     
                 printer.open().then(function () {
                     printer.align('left')
-                        .text('TOKO SEMBAKO KARIYONO JAYA - JL RAYA PASAR CENTONG KEDIRI JAWA TIMUR INDONESIA')
-                        .text('- - - - - - - - - - - -')
+                        .text(nama_toko+' - '+alamat_toko)
+                        .text(dash)
                         .text(id_transaksi)
                         .text(timestamp)
-                        .text('- - - - - - - - - - - -')
+                        .text(dash)
                     
                     // Loop untuk setiap item belanja
                     list_data_belanja.forEach(function (item) {
@@ -171,25 +177,30 @@
                         var total_qty = item.total_qty;
                         var satuan = item.satuan;
                         var harga = item.harga;
+                        var sub_total_harga = parseInt(total_qty) * parseInt(harga);
     
-                        printer.text('( ' + nomor + ' ). ' + nama_barang)
-                            .text(total_qty + ' (' + satuan + ') x ' + formatRupiah(harga))
+                        printer.text(nama_barang+' ('+satuan+')')
+                            .text(total_qty+' x '+harga+' : '+formatRupiah(sub_total_harga))
                             .text('')
                     });
     
-                    printer.text('- - - - - - - - - - - -')
+                    printer.text(dash)
+                        .text('NAMA PEMBELI')
+                        .text(pembeli)
+                        .text('')
+                        .text(dash)
                         .text('TOTAL BELANJA')
                         .text(formatRupiah(total_belanja))
                         .text('')
-                        .text('- - - - - - - - - - - -')
+                        .text(dash)
                         .text('TOTAL BAYAR')
                         .text(formatRupiah(total_bayar))
                         .text('')
-                        .text('- - - - - - - - - - - -')
+                        .text(dash)
                         .text('KEMBALIAN')
                         .text(formatRupiah(kembalian))
                         .text('')
-                        .text('- - - - - - - - - - - -')
+                        .text(dash)
                         .cut()
                         .print();
                 });
@@ -282,6 +293,7 @@
             btnDokumentasiPrinterTool.attr('hidden',true);
             formPrinterModePc.attr('hidden',true);
             toastError("Mohon pilih mode printer sesuai device yang digunakan!");
+            $('#ModalPengaturanPrinter').modal('show');
         }
 
     }

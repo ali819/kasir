@@ -3,7 +3,7 @@
   
 <head>
     <!--  Title -->
-    <title>Mordenize | @yield('title')</title>
+    <title>Toko | @yield('title')</title>
     <!--  Required Meta Tag -->
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -149,6 +149,14 @@
                   </a>
               </li>
               <li class="sidebar-item">
+                <a class="sidebar-link" href="{{ route('informasi_toko') }}" aria-expanded="false">
+                    <span>
+                        <i class="ti ti-alert-circle"></i>
+                      </span>
+                      <span class="hide-menu">Informasi&nbsp;Toko</span>
+                  </a>
+              </li>
+              <li class="sidebar-item">
                 <a class="sidebar-link btnModalPrinter" href="javascript:void(0)" data-toggle="modal" data-target="ModalPengaturanPrinter" aria-expanded="false">
                     <span>
                       <i class="ti ti-printer"></i>
@@ -191,7 +199,7 @@
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <div class="d-flex align-items-center justify-content-between">
                     <a href="javascript:void(0)" class="nav-link d-flex d-lg-none align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobilenavbar" aria-controls="offcanvasWithBothOptions">
-                        Data Profile&emsp;<i class="ti ti-chevron-right fs-7"></i>&emsp;Detail&emsp;<i class="ti ti-chevron-right fs-7"></i>
+                        Data Profil&emsp;<i class="ti ti-chevron-right fs-7"></i>&emsp;Detail&emsp;<i class="ti ti-chevron-right fs-7"></i>
                     </a>
                 <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-center">
                   <li class="nav-item dropdown">
@@ -205,7 +213,7 @@
                     <div class="dropdown-menu content-dd dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop1">
                       <div class="profile-dropdown position-relative" data-simplebar>
                         <div class="py-3 px-7 pb-0">
-                          <h5 class="mb-0 fs-5 fw-semibold">Data Profile</h5>
+                          <h5 class="mb-0 fs-5 fw-semibold">Data Profil</h5>
                         </div>
                         <div class="d-flex align-items-center py-9 mx-7 border-bottom">
                           <img src="{{ asset('template/dist/images/profile/user-1.jpg') }}" class="rounded-circle" width="80" height="80" alt="" />
@@ -268,7 +276,7 @@
           Toastify({
               text: message,
               style: {
-                  background: "#3434eb",
+                  background: "linear-gradient(to right, #00b09b, #96c93d)",
               },
               duration: 3000,
               close: false,
@@ -278,7 +286,7 @@
           Toastify({
               text: message,
               style: {
-                  background: "#ce0006",
+                  background: "linear-gradient(to right, #f50707, #ff8f57)",
               },
               duration: 4000,
               close: false,

@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/tabel-detail-pembelian', [AdminController::class, 'tabel_detail_pembelian'])->name('tabel_detail_pembelian');
     Route::get('/dashboard/hitung-data-pembelian', [AdminController::class, 'hitung_data_pembelian'])->name('hitung_data_pembelian');
 
+    Route::get('/data/infomasi-toko', [AdminController::class, 'informasi_toko'])->name('informasi_toko');
+    Route::post('/data/infomasi-toko', [AdminController::class, 'update_informasi_toko'])->name('update_informasi_toko');
+
 });
 
 require __DIR__.'/auth.php';
