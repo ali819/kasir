@@ -62,7 +62,7 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="mb-2">
-                                <label for="cariNamaBarang" class=""><b>Pilih Barang ( autocomplete )</b></label>
+                                <label for="cariNamaBarang" class="" style="margin-bottom:5px;"><b>Pilih Barang ( autocomplete )</b></label>
                                 <input type="search" class="form-control" id="cariNamaBarang" name="cariNamaBarang" placeholder="Ketik nama barang.." list="listBarang">
                                 <datalist id="listBarang">
                                     @foreach ($list_barang as $item)

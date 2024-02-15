@@ -148,11 +148,11 @@
                 </div>
                 <div class="col-4">
                   
-                  <label class=""><b>Pembeli</b></label>
+                  <label class=""><b>Nama&nbsp;Pembeli</b></label>
                   <hr>
-                  <label class=""><b>Total</b></label>
+                  <label class=""><b>Total&nbsp;Belanja</b></label>
                   <hr>
-                  <label class=""><b>Bayar</b></label>
+                  <label class=""><b>Total&nbsp;Bayar</b></label>
                   <hr>
                   <label class=""><b>Kembalian</b></label>
                   <hr>
@@ -386,7 +386,7 @@
                     $('#formDetailListPembelian').append(
                     `
                         <hr>
-                        <label class="">( ${index} ). ${detail.nama_barang} ( ${detail.satuan} ) - ( ${detail.qty} x ${formatRupiah(detail.harga)} : ${formatRupiah(detail.total_harga)} )</label>
+                        <label class="">${index}. ${detail.nama_barang} ( ${detail.satuan} ) - ( ${detail.qty} x ${detail.harga} : ${formatRupiah(detail.total_harga)} )</label>
                     `);
                 });
                 $('#formDetailListPembelian').append('<hr>');
