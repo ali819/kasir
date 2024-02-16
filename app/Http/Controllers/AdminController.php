@@ -775,13 +775,11 @@ class AdminController extends Controller
                     <br>
                     <span id="notaNamaPembeli">'.$pembeli.'</span>
                     <br>
-                    <br>
                     '.$dash.'
                     <br>
                     TOTAL BELANJA
                     <br>
                     <span id="notaTotalBelanja">'.$this->formatRupiah($total_belanja).'</span>
-                    <br>
                     <br>
                     '.$dash.'
                     <br>
@@ -789,13 +787,11 @@ class AdminController extends Controller
                     <br>
                     <span id="notaTotalBayar">'.$this->formatRupiah($total_bayar).'</span>
                     <br>
-                    <br>
                     '.$dash.'
                     <br>
                     KEMBALIAN
                     <br>
                     <span id="notaKembalian">'.$this->formatRupiah($kembalian).'</span>
-                    <br>
                     <br>
                     '.$dash.'
                     <br>
