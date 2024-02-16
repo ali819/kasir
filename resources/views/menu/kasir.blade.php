@@ -73,7 +73,7 @@
                         </div>
                         <div class="col-12">  
                             <div class="mb-1">
-                                <button type="submit" class="btn btn-primary col-12 btnTambahBarang" data-bs-toggle="modal" data-bs-target="#" style="font-weight:bold"><i class="ti ti-shopping-cart"></i>&emsp;Tambahkan Ke List</button>
+                                <button type="submit" class="btn btn-primary col-12 btnTambahBarang" style="font-weight:bold"><i class="ti ti-shopping-cart"></i>&emsp;Tambahkan Ke List</button>
                             </div>
                         </div>
                     
