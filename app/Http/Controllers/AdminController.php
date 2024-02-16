@@ -566,16 +566,6 @@ class AdminController extends Controller
         $kembalian = $request->kembalian;
         $pembeli = $request->pembeli;
 
-        // Mengelompokkan data berdasarkan indeks dinamis
-        $groupedData = [];
-        foreach ($dynamicTabelBelanja as $data) {
-            foreach ($data as $key => $value) {
-                $index = substr($key, -1); // Mengambil indeks dinamis
-                $fieldName = key($value); // Mengambil nama field (misal: nama_barang, satuan, dll.)
-                $groupedData[$index][$fieldName] = $value[$fieldName];
-            }
-        }
-
         // DB transaction 
         try {
             // Memulai transaksi database
@@ -600,7 +590,9 @@ class AdminController extends Controller
             $list_id = [];
 
             $list_data_belanja = [];
-            foreach ($groupedData as $index => $data) {
+
+            // Lakukan sesuatu dengan data yang diterima, contohnya:
+            foreach ($dynamicTabelBelanja as $index => $data) {
                 $index++;
                 $id_barang = $data['id_barang'];
                 $nama_barang = $data['nama_barang'];

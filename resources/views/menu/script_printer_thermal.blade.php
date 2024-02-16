@@ -61,63 +61,6 @@
     // =====================================
     
     // PRINT HP (RAWBT) ( https://www.rawbt.ru/start.html )
-    let html_print_example = 
-    `
-        <div class="col-12">
-            <h5>
-                <br>
-                <span id="notaNamaToko">NAMA TOKO</span> - <span id="notaAlamat">ALAMAT</span> 
-            </h5>
-            <p>
-                <span id="notaIdTransaksi">TRX-13</span> <br> 
-                <span id="notaTanggalPembelian">15 Januari 2024 18:10:05</span>
-            </p>
-            <p>
-                - - - - - - - - - - - -
-                <br>
-                ( 1 ). Susu bubuk dancow coklat sehat anak 500ml
-                <br>
-                3 (Grosir) x Rp 15.000
-                <br>
-                <br>
-    
-                ( 2 ). Odol Pepsodent 300gr
-                <br>
-                1 (Ecer) x Rp 10.000
-                <br>
-                <br>
-    
-                ( 3 ). Beras Raja Lele
-                <br>
-                1 Kg x Rp 10.000
-                <br>
-                <br>
-                - - - - - - - - - - - -
-                <br>
-                TOTAL BELANJA
-                <br>
-                <span id="notaTotalBelanja">Rp 35.000</span>
-                <br>
-                <br>
-                - - - - - - - - - - - -
-                <br>
-                TOTAL BAYAR
-                <br>
-                <span id="notaTotalBayar">Rp 50.000</span>
-                <br>
-                <br>
-                - - - - - - - - - - - -
-                <br>
-                KEMBALIAN
-                <br>
-                <span id="notaKembalian">Rp 15.000</span>
-                <br>
-                <br>
-                - - - - - - - - - - - -
-                <br>
-            </p>
-        </div>
-    `;
     function printNotaPembelian(HTMLarea) {
         $('#html_print').html('');
         $('#html_print').html(HTMLarea);
@@ -203,7 +146,7 @@
             }
         });
     }
-    
+
     // STATUS PRINTER (LOCAL STORAGE)
     function saveToLocalStorage() {
         var selectedValue = $('#ModePrinter').val();

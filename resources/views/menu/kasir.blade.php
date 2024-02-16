@@ -431,7 +431,7 @@
                     </div>
                   </td>
                   <td class="text-end border-bottom-0"><h6 class="fs-4 fw-semibold mb-0 tabelBelanjaRp numberDataRp${urutan}">${rp}</h6></td>
-                  <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][id_barang]" value="${id_barang}">
+                  <input type="hidden" class="form-control dynamicBelanjaInputan dynamicLoopingInput" name="dynamicTabelBelanja[${urutan}][id_barang]" data-urutan="${urutan}" value="${id_barang}">
                   <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][nama_barang]" value="${nama_barang}">
                   <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][satuan]" value="${satuan}">
                   <input type="hidden" class="form-control dynamicBelanjaInputan" name="dynamicTabelBelanja[${urutan}][total_qty]" value="${total_qty}">
@@ -561,22 +561,37 @@
                 return toastError("Mohon pilih mode device printer!");
             }
             customConfirm("Konfirmasi pembelian ?","Pastikan data sudah benar.").then((confirmed) => {
+                
+                // Mengumpulkan data input dinamis
+                var dynamicTabelBelanja = [];
+                $('.dynamicLoopingInput').each(function() {
+                    var urutan = $(this).data('urutan');
+                    var id_barang = $('input[name="dynamicTabelBelanja[' + urutan + '][id_barang]"]').val();
+                    var nama_barang = $('input[name="dynamicTabelBelanja[' + urutan + '][nama_barang]"]').val();
+                    var satuan = $('input[name="dynamicTabelBelanja[' + urutan + '][satuan]"]').val();
+                    var total_qty = $('input[name="dynamicTabelBelanja[' + urutan + '][total_qty]"]').val();
+                    var total_harga = $('input[name="dynamicTabelBelanja[' + urutan + '][total_harga]"]').val();
+                    var harga = $('input[name="dynamicTabelBelanja[' + urutan + '][harga]"]').val();
+
+                    // Menambahkan data ke dalam array
+                    dynamicTabelBelanja.push({
+                        id_barang: id_barang,
+                        nama_barang: nama_barang,
+                        satuan: satuan,
+                        total_qty: total_qty,
+                        total_harga: total_harga,
+                        harga: harga
+                    });
+                });
+
+                console.log(dynamicTabelBelanja);
+                
                 if (confirmed) {
                     
                     var btnDefault = $('.btnKonfirmasiPembelian').html();
                     $('.btnKonfirmasiPembelian').html('Memproses ..');
                     $('.btnKonfirmasiPembelian').attr('disabled',true);
 
-                    // Mengumpulkan data input dinamis
-                    var dynamicTabelBelanja = [];
-                    $('.dynamicBelanjaInputan').each(function () {
-                        var dataName = $(this).attr('name');
-                        var value = $(this).val();
-
-                        dynamicTabelBelanja.push({
-                            [dataName]: value
-                        });
-                    });
                     var total_belanja = totalBelanja;
                     var total_bayar = totalBayar;
                     var kembalian = $('.summaryKembalian').attr('data-total-kembalian');
