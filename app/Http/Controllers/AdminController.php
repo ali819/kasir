@@ -808,27 +808,17 @@ class AdminController extends Controller
         $nota_pembelian .=' 
                     '.$dash.'
                     <br>
-                    NAMA PEMBELI
+                    PEMBELI : <span id="notaNamaPembeli">'.$pembeli.'</span>
                     <br>
-                    <span id="notaNamaPembeli">'.$pembeli.'</span>
-                    <br>
-                    '.$dash.'
-                    <br>
-                    TOTAL BELANJA
-                    <br>
-                    <span id="notaTotalBelanja">'.$this->formatRupiah($total_belanja).'</span>
                     <br>
                     '.$dash.'
                     <br>
-                    TOTAL BAYAR
+                    TOTAL : <span id="notaTotalBelanja">'.$this->formatRupiah($total_belanja).'</span>
                     <br>
-                    <span id="notaTotalBayar">'.$this->formatRupiah($total_bayar).'</span>
+                    BAYAR : <span id="notaTotalBayar">'.$this->formatRupiah($total_bayar).'</span>
                     <br>
-                    '.$dash.'
+                    KEMBALI : <span id="notaKembalian">'.$this->formatRupiah($kembalian).'</span>
                     <br>
-                    KEMBALIAN
-                    <br>
-                    <span id="notaKembalian">'.$this->formatRupiah($kembalian).'</span>
                     <br>
                     '.$dash.'
                     <br>

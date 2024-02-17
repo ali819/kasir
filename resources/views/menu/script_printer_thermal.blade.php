@@ -112,6 +112,7 @@
                         .text(dash)
                         .text(id_transaksi)
                         .text(timestamp)
+                        .text('')
                         .text(dash)
                     
                     // Loop untuk setiap item belanja
@@ -129,17 +130,13 @@
                     });
     
                     printer.text(dash)
-                        .text('NAMA PEMBELI')
-                        .text(pembeli)
+                        .text('PEMBELI : '+pembeli)
+                        .text('')
                         .text(dash)
-                        .text('TOTAL BELANJA')
-                        .text(formatRupiah(total_belanja))
-                        .text(dash)
-                        .text('TOTAL BAYAR')
-                        .text(formatRupiah(total_bayar))
-                        .text(dash)
-                        .text('KEMBALIAN')
-                        .text(formatRupiah(kembalian))
+                        .text('TOTAL : '+formatRupiah(total_belanja))
+                        .text('BAYAR : '+formatRupiah(total_bayar))
+                        .text('KEMBALI : '+formatRupiah(kembalian))
+                        .text('')
                         .text(dash)
                         .cut()
                         .print();
