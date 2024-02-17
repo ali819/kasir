@@ -47,6 +47,7 @@
             </div>
           </div>
           <div class="modal-footer">
+            <a class="btn btn-info" href="{{ asset('printer-thermal/tutorial-setting-printer.txt') }}" target="_blank" rel="noopener noreferrer">Tutorial Install&emsp;<i class="ti ti-album"></i></a>
               <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Tutup&emsp;<i class="ti ti-x"></i></button>
           </div>
         </form>
