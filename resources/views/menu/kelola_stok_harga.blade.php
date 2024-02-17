@@ -295,7 +295,7 @@
         var tabel_stok = $("#tabel_stok").DataTable({
             dom: 'lrtip',
             order: [
-                [1,'DESC']
+                [2,'DESC']
             ],
             autoWidth: false,
             language: {
@@ -484,7 +484,11 @@
                   errorHandlerToast(response.pesan);
                   $('.btnKonfirmasiTambahBarang').html(btnValue);
                   $('.btnKonfirmasiTambahBarang').attr('disabled',false);
-    
+                  
+                } else if(response.kode == 500) {
+                  toastError(response.pesan);
+                  $('.btnKonfirmasiTambahBarang').html(btnValue);
+                  $('.btnKonfirmasiTambahBarang').attr('disabled',false);
                 }
               }, error: function (error) {
     

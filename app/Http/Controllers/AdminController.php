@@ -203,9 +203,24 @@ class AdminController extends Controller
 
             if($kategori == 'satuan_tidak_tetap') {
                 $insert = [];
+                $satuanList = [];
                 foreach ($dynamicForm as $input) {
                     $hargaSatuan = $input['tbhHargaSatuanDynamic'];
                     $satuan = $this->UpperFirstText($input['tbhSatuanDynamic']);
+
+                    // Periksa apakah satuan sudah ada sebelumnya
+                    if (in_array($satuan, $satuanList)) {
+                        // Jika satuan sudah ada, Anda dapat menangani situasi duplikat di sini
+                        $pesan = 'Satuan "'.$satuan.'" tidak boleh duplikat!';
+                        return response()->json([
+                            'kode' => 500,
+                            'pesan' => $pesan
+                        ]);
+                        break;
+                    }
+
+                    // Tambahkan satuan ke daftar
+                    $satuanList[] = $satuan;
                 
                     $insert[] = [
                         'id_stok_barang' => $idStokBarang,
@@ -457,11 +472,28 @@ class AdminController extends Controller
             ]);
 
             // update list_satuan_tidak_tetap
+            $satuanList = [];
             foreach($dynamicUpdateInput as $input) {
 
                 $id_satuan = $input['UpdateSatuanId1'];
                 $satuan = $this->UpperFirstText($input['UpdateSatuanDynamic1']);
                 $harga = $input['UpdateHargaSatuanDynamic1'];
+
+
+                // Periksa apakah satuan sudah ada sebelumnya
+                if (in_array($satuan, $satuanList)) {
+                    // Jika satuan sudah ada, kirim respons JSON yang sesuai
+                    $pesan = 'Satuan "'.$satuan.'" tidak boleh sama / duplikat!';
+                    return response()->json([
+                        'kode' => 500,
+                        'pesan' => $pesan
+                    ]);
+                    // Hentikan iterasi loop
+                    break;
+                }
+                // Tambahkan satuan ke daftar
+                $satuanList[] = $satuan;
+
                 if($id_satuan) {
                     DB::table('list_satuan_tidak_tetap')->where('id',$id_satuan)->update([
                         'harga' => $harga,
