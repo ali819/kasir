@@ -847,13 +847,21 @@
           </div>
         </div>
       </div>
-      <label for=""><b>Harga Per-Barang ( Eceran )</b></label>
+      <label for=""><b>Harga Eceran</b></label>
       <input type="number" id="tbhHargaPerBiji" name="tbhHargaPerBiji" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" required>
       <label for=""><b>Harga Grosir</b></label>
       <input type="number" id="tbhHargaGrosir" name="tbhHargaGrosir" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" required>
-      <label for=""><b>1 Grosir = Berapa Barang ?</b></label>
+      <label for=""><b>1 Grosir = Berapa Barang ( Pcs ) ?</b></label>
       <input type="number" id="tbhQtyGrosir" name="tbhQtyGrosir" class="form-control" placeholder="0 - 999999" required>
-      <label for=""><b>Jumlah Stok ( Dihitung Pcs )</b></label>
+      <div class="col-12" style="margin-top:10px;">
+        <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
+          <div class="d-flex align-items-center font-medium me-3 me-md-0">
+            <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
+            Jika ingin memantau jumlah stok isi form berikut. Jika tidak isikan dengan angka 0
+          </div>
+        </div>
+      </div>
+      <label for=""><b>Jumlah Stok ( Pcs )</b></label>
       <input type="number" id="tbhStok" name="tbhStok" class="form-control" placeholder="0 - 999999">
       <label for=""><b>Keterangan</b></label>
       <textarea name="tbhKeterangan" id="tbhKeterangan" class="form-control" cols="30" rows="3" placeholder="Isi keterangan jika diperlukan .."></textarea>
@@ -871,7 +879,7 @@
       <div class="row">
           <div class="col-4">
             <label for=""><b>Satuan</b></label>
-            <input type="text" class="form-control custom-d capitalEachWord" name="dynamicTbhInput[0][tbhSatuanDynamic]" id="" placeholder="Kg, Gram, Pack, dll" required>
+            <input type="text" class="form-control custom-d capitalEachWord" name="dynamicTbhInput[0][tbhSatuanDynamic]" id="" placeholder="Kg, 1/2 Gram, dll" required>
           </div>
           <div class="col-6">
             <label for=""><b>Harga Per-Satuan</b></label>
