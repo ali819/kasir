@@ -67,7 +67,10 @@ class AdminController extends Controller
 
     public function kasir()
     {
-        $list_barang = DB::table('stok_barang')->select('id','nama_barang')->get();
+        $list_barang = DB::table('stok_barang')
+        ->select('id','nama_barang')
+        ->orderBy('nama_barang')
+        ->get();
         return view('menu.kasir',compact('list_barang'));
     }
     public function data_pembelian()
@@ -632,6 +635,16 @@ class AdminController extends Controller
                 $total_qty = $data['total_qty'];
                 $total_harga = $data['total_harga'];
                 $harga = $data['harga'];
+
+                // Validasi jika null atau kosong
+                if (empty($total_qty) || empty($total_harga) || $total_qty <= 0 || $total_harga <= 0) {
+                    return response()->json([
+                        'kode' => 500,
+                        'pesan' => 'Jumlah beli / harga barang tidak boleh kosong!',
+                    ]);
+                    // Hentikan iterasi loop
+                    break;
+                }
 
                 $list_data_belanja[] = [
                     'nomor' => $index,

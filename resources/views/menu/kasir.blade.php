@@ -563,6 +563,9 @@
             customConfirm("Konfirmasi pembelian ?","Pastikan data sudah benar.").then((confirmed) => {
                 
                 // Mengumpulkan data input dinamis
+                var validasiJumlahBeli = true;
+                var validasiHargaBarang = true;
+
                 var dynamicTabelBelanja = [];
                 $('.dynamicLoopingInput').each(function() {
                     var urutan = $(this).data('urutan');
@@ -572,6 +575,14 @@
                     var total_qty = $('input[name="dynamicTabelBelanja[' + urutan + '][total_qty]"]').val();
                     var total_harga = $('input[name="dynamicTabelBelanja[' + urutan + '][total_harga]"]').val();
                     var harga = $('input[name="dynamicTabelBelanja[' + urutan + '][harga]"]').val();
+
+                    // validasi
+                    if(parseInt(total_qty) <= 0 || total_qty === '') {
+                        validasiJumlahBeli = false;
+                    }
+                    if(parseInt(total_harga) <= 0 || total_harga === '') {
+                        validasiHargaBarang = false;
+                    }
 
                     // Menambahkan data ke dalam array
                     dynamicTabelBelanja.push({
@@ -583,10 +594,12 @@
                         harga: harga
                     });
                 });
-
-                console.log(dynamicTabelBelanja);
                 
                 if (confirmed) {
+
+                    if(!validasiHargaBarang || !validasiJumlahBeli) {
+                        return toastError("Harga barang / jumlah beli tidak boleh kosong!");
+                    }
                     
                     var btnDefault = $('.btnKonfirmasiPembelian').html();
                     $('.btnKonfirmasiPembelian').html('Memproses ..');
@@ -611,41 +624,49 @@
                         dataType: "JSON",
                         success: function (response) {
 
-                            // cek jenis printer
-                            if(modePrinter == 'hp') {
-                                printNotaPembelian(response.nota_pembelian);
-                            } else if(modePrinter == 'pc') {
-                                var raw_data = response.raw_data;
-                                // Panggil fungsi untuk mencetak receipt dengan data dari server
-                                printReceiptRectaHost(
-                                    raw_data.list_data_belanja,
-                                    raw_data.id_transaksi,
-                                    raw_data.total_belanja,
-                                    raw_data.total_bayar,
-                                    raw_data.kembalian,
-                                    raw_data.timestamp,
-                                    raw_data.pembeli,
-                                    raw_data.nama_toko,
-                                    raw_data.alamat_toko,
-                                    response.pesan
-                                );
-                                
+                            if(response.kode == 200) {
+
+                                // cek jenis printer
+                                if(modePrinter == 'hp') {
+                                    printNotaPembelian(response.nota_pembelian);
+                                } else if(modePrinter == 'pc') {
+                                    var raw_data = response.raw_data;
+                                    // Panggil fungsi untuk mencetak receipt dengan data dari server
+                                    printReceiptRectaHost(
+                                        raw_data.list_data_belanja,
+                                        raw_data.id_transaksi,
+                                        raw_data.total_belanja,
+                                        raw_data.total_bayar,
+                                        raw_data.kembalian,
+                                        raw_data.timestamp,
+                                        raw_data.pembeli,
+                                        raw_data.nama_toko,
+                                        raw_data.alamat_toko,
+                                        response.pesan
+                                    );
+                                    
+                                } else {
+                                    toastError("Mode printer tidak dipilih! Silahkan cetak ulang pada menu pembelian!");
+                                }
+    
+                                $('#tabelListBelanja').html(`
+                                    <tr class="listBelanjaanKosong">
+                                        <td colspan="3" class="text-center fs-5" style="color:red;">List barang kosong :(</td>
+                                    </tr>
+                                `);
+                                $('.summaryTotalBayar').val('');
+                                $('.summaryPembeli').val('');
+                                hitungTotalBayarKembalian();
+                                changeTotalBelanja();
+    
+                                // toast
+                                toastSuccess("Transaksi pembelian berhasil!");
                             } else {
-                                toastError("Mode printer tidak dipilih! Silahkan cetak ulang pada menu pembelian!");
+
+                                toastError(response.pesan);
+                            
                             }
 
-                            $('#tabelListBelanja').html(`
-                                <tr class="listBelanjaanKosong">
-                                    <td colspan="3" class="text-center fs-5" style="color:red;">List barang kosong :(</td>
-                                </tr>
-                            `);
-                            $('.summaryTotalBayar').val('');
-                            $('.summaryPembeli').val('');
-                            hitungTotalBayarKembalian();
-                            changeTotalBelanja();
-
-                            // toast
-                            toastSuccess("Transaksi pembelian berhasil!");
 
                         }, error: function (error) {
                             toastError("Oops! Terjadi kesalahan. Silahkan coba lagi!")
