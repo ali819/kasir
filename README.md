@@ -1,7 +1,7 @@
-## Aplikasi Kasir POS & Inventory
+## Aplikasi Kasir POS - Laravel
 
 ### Deskripsi
-Aplikasi Kasir POS & Inventory merupakan sistem manajemen penjualan dan persediaan stok barang, dirancang untuk memperlancar operasi bisnis ritel (cocok untuk toko sembako / kelontong). Dengan aplikasi ini, bisnis dapat dengan mudah mengelola transaksi penjualan, melacak tingkat persediaan secara real-time, menghasilkan dashboard yang informatif, dan banyak lagi.
+Aplikasi Kasir POS sistem manajemen penjualan dan persediaan stok barang, dirancang untuk memperlancar operasi bisnis ritel (cocok untuk toko sembako / kelontong). Dengan aplikasi ini, bisnis dapat dengan mudah mengelola transaksi penjualan, melacak tingkat persediaan secara real-time, menghasilkan dashboard yang informatif, dan banyak lagi.
 
 ### Preview Aplikasi
 ![Preview 1](public/preview/preview-1.png)
