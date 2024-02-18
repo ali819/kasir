@@ -417,7 +417,7 @@
                   <td class="border-bottom-0">
                     <div class="d-flex align-items-center gap-3">
                       <div>
-                        <h6 class="fw-semibold fs-4 mb-0 ">${urutan}. ${nama_barang}</h6>
+                        <h6 class="fw-semibold fs-4 mb-0 "><span class="urutanListBelanja">${urutan}</span>. ${nama_barang}</h6>
                         <p class="mb-0">( ${satuan} )</p>
                         <a href="javascript:void(0)" class="text-danger fs-4 btnHapusListBarang" data-urutan="${urutan}"><i class="ti ti-trash"></i></a>
                       </div>
@@ -444,7 +444,17 @@
             $('#ModalTambahKeList').modal('hide');
             // hitung total belanja
             changeTotalBelanja();
+            //hitung ulang urutan
+            urutanListBelanja();
         }
+        function urutanListBelanja() {
+            var urutan = 1;
+            $('.urutanListBelanja').each(function() {
+                $(this).text(urutan); // Mengatur teks span menjadi nomor urutan
+                urutan++; // Menambah nomor urutan untuk item berikutnya
+            });
+        }
+
 
         // ON CHANGE TABEL LIST BELANJAAN
         let timeQty = null;
@@ -496,6 +506,8 @@
                         </tr>
                     `);
             }
+            // hitung ulang urutan
+            urutanListBelanja();
         });
 
         // HITUNGAN TOTAL BELANJA

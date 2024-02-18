@@ -205,13 +205,13 @@
                   <input type="number" class="form-control" id="updateId" name="updateId" placeholder=".." required hidden>
                   <label for="" class=""><b>Nama Barang</b></label>
                   <input type="text" class="form-control" id="updateNamaBarang" name="updateNamaBarang" placeholder="Nama barang .." required>
-                  <label for=""><b>Harga Per-Barang ( Eceran )</b> </label>
+                  <label for=""><b>Harga Eceran</b> </label>
                   <input type="number" id="updateHargaPerBiji" name="updateHargaPerBiji" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" value="0" required>
                   <label for=""><b>Harga Grosir</b></label>
                   <input type="number" id="updateHargaGrosir" name="updateHargaGrosir" class="form-control terbilang" placeholder="Rp ( 0 - 999999 )" value="0" required>
-                  <label for=""><b>1 Grosir = Berapa Barang ?</b></label>
+                  <label for=""><b>1 Grosir = Berapa Barang ( Pcs ) ?</b></label>
                   <input type="number" id="updateQtyGrosir" name="updateQtyGrosir" class="form-control" placeholder="0 - 999999" required>
-                  <label for=""><b>Jumlah Stok ( Dihitung Pcs )</b></label>
+                  <label for=""><b>Jumlah Stok ( Pcs )</b></label>
                   <input type="number" id="updateStok" name="updateStok" class="form-control" placeholder="0 - 999999">
                   <label for=""><b>Keterangan</b></label>
                   <textarea name="updateKeterangan" id="updateKeterangan" class="form-control" cols="30" rows="3" placeholder="Isi keterangan jika diperlukan .."></textarea>
@@ -257,7 +257,7 @@
                 <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
                   <div class="d-flex align-items-center font-medium me-3 me-md-0">
                     <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-                    Pembelian barang umumnya harus di timbang terlebih dahulu ( Satuan tidak tetap )
+                    Pembelian barang biasanya di timbang / diukur / tentukan satuan sendiri ( Satuan tidak tetap )
                   </div>
                 </div>
               </div>
@@ -843,7 +843,7 @@
         <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
           <div class="d-flex align-items-center font-medium me-3 me-md-0">
             <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-            Satuan Tetap : barang bisa dijual 'Eceran' & 'Grosir', contoh sabun, bolpoin, dll
+            Satuan Tetap : barang bisa dijual 'Eceran' & 'Grosir', contoh : sabun, bolpoin dll
           </div>
         </div>
       </div>
@@ -872,7 +872,7 @@
         <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
           <div class="d-flex align-items-center font-medium me-3 me-md-0">
             <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-            Satuan Tidak Tetap : pembelian barang biasanya di timbang terlebih dahulu contoh beras, gula, telur dll
+            Satuan Tidak Tetap : pembelian barang di timbang / diukur / tentukan satuan sendiri contoh : telur (butir, 1 kg, 1/2 kg, 1/4 kg), stiker (1 cm, 1 meter, 1/2 meter) dll
           </div>
         </div>
       </div>
@@ -926,7 +926,7 @@
           `
             <div class="row" id="DataSatuanDynamic${hitungan}">
               <div class="col-4">
-                <input type="text" class="form-control custom-d capitalEachWord" name="dynamicTbhInput[${hitungan}][tbhSatuanDynamic]" id="" placeholder="Kg, Gram, Pack, dll" required>
+                <input type="text" class="form-control custom-d capitalEachWord" name="dynamicTbhInput[${hitungan}][tbhSatuanDynamic]" id="" placeholder="Kg, 1/2 Gram, dll" required>
               </div>
               <div class="col-6">
                 <input type="number" class="form-control custom-d terbilang" name="dynamicTbhInput[${hitungan}][tbhHargaSatuanDynamic]" id="dynamicUrutan${hitungan}" placeholder="Rp ( 0 - 99999999 )" required>
