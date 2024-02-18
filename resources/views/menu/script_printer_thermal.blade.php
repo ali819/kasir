@@ -15,8 +15,7 @@
               <div class="col-12">
                   <div class="alert customize-alert alert-dismissible text-primary border border-primary fade show remove-close-icon" role="alert">
                       <div id="keteranganPrinter" class="d-flex align-items-center font-medium me-3 me-md-0">
-                        <i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-                        Aplikasi support dengan jenis printer thermal apapun, jika menggunakan android / tab / IOS printer harus support bluetooth
+                        {{--  --}}
                       </div>
                   </div>
               </div>
@@ -30,7 +29,7 @@
                     <label for="ModePrinter" class=""><b>Pilih Device Printer</b></label>
                     <select name="modePrinter" id="ModePrinter" class="form-control">
                         <option value="">- Pilih Mode Printer -</option>
-                        <option value="hp">Printer : Handphone ( Android, IOS, Tablet )</option>
+                        <option value="hp">Printer : Android ( Hp, Tablet )</option>
                         <option value="pc">Printer : PC ( Laptop / Komputer )</option>
                     </select>
                 </div>
@@ -201,7 +200,7 @@
         if(mode_printer == 'hp') {
             keteranganPrinter.html(
                 `<i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-                Gunakan aplikasi RAWBT untuk melakukan cetak menggunakan perangkat HP (android,tab,IOS, dll)`
+                Gunakan aplikasi RAWBT untuk melakukan cetak menggunakan perangkat Android (Hp,Tab, dll)`
             );
             btnDokumentasiPrinterTool.attr('href','https://rawbt.ru/');
             btnDokumentasiPrinterTool.html('<u>Lihat dokumentasi (RAWBT)</u>');
@@ -212,7 +211,7 @@
     
             keteranganPrinter.html(
                 `<i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-                Untuk melakukan print pada Laptop / PC (windows) anda harus menginstall aplikasi Recta Host`
+                Untuk melakukan print pada Laptop / PC anda harus menginstall aplikasi Recta Host`
             );
             btnDokumentasiPrinterTool.attr('href','https://github.com/adenvt/recta');
             btnDokumentasiPrinterTool.html('<u>Lihat dokumentasi (RECTA-HOST)</u>');
@@ -223,7 +222,7 @@
     
             keteranganPrinter.html(
                 `<i class="ti ti-info-circle fs-5 me-2 flex-shrink-0 text-primary"></i>
-                Aplikasi support dengan jenis printer thermal apapun, jika menggunakan android / tab / IOS printer harus support bluetooth`
+                Aplikasi support dengan jenis printer thermal apapun, jika menggunakan Android (Hp,Tab) printer harus support bluetooth`
             );
             btnDokumentasiPrinterTool.attr('href','javadcript:void(0)');
             btnDokumentasiPrinterTool.html('<u>Pilih jenis printer</u>');
