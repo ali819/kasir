@@ -398,6 +398,10 @@
                 toastError("Perhitungan total harga kosong!");
                 return;
             }
+            if(total_harga === '' || isNaN(total_harga)) {
+                toastError("Total harga kosong!");
+                return;
+            }
 
             drawTabelListBelanja(id_barang, nama_barang, satuan, total_qty, total_harga, harga);
 
