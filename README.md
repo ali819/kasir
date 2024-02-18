@@ -49,7 +49,7 @@ https://adminmart.com
 Proyek ini dilisensikan di bawah Lisensi MIT. Lihat file [LICENSE](LICENSE) untuk detailnya.
 
 ### Dukungan
-Untuk pertanyaan atau bantuan, silakan hubungi [ali.sabana819@gmail.com](mailto:alisabana819@gmail.com).
+Untuk pertanyaan atau bantuan, silakan hubungi [ali.sabana819@gmail.com](mailto:ali.sabana819@gmail.com).
 
 ### Roadmap
 - Menyelesaikan pengembangan fitur buka cashdrawer otomatis.
