@@ -326,8 +326,8 @@
         function hitunganTotalBelanja() {
             var qty = $('.hitunganDataQty').val();
             var harga = $('.hitunganDataHarga:checked').attr('data-harga');
-            harga = (harga === '') ? 0 : harga;
-            qty = (qty === '') ? 0 : qty;
+            harga = (harga === '' || isNaN(harga)) ? 0 : harga;
+            qty = (qty === '' || isNaN(qty)) ? 0 : qty;
 
             var TotalBelanja = qty * harga;
             var Rp = formatRupiah(TotalBelanja);
@@ -335,8 +335,6 @@
             
             $('.hitunganTotalRp').html(Rp);
             $('.hitunganTotalTerbilang').html(Terbilang);
-
-            console.log('QTY : '+qty+' | HARGA : '+Rp+' | TERBILANG : '+Terbilang);
 
         }
         $(document).on('click', '.btnMinusTambahList', function () {
@@ -349,6 +347,7 @@
                 inputQty.val(0);
             }
             hitunganTotalBelanja();
+
         });
         $(document).on('click', '.btnPlusTambahList', function () {
             var inputQty = $(this).parent().find('.qty');
@@ -404,10 +403,11 @@
 
 
         });
+        let nomorUrut = 1;
         function drawTabelListBelanja(id_barang, nama_barang, satuan, total_qty, total_harga, harga) {
             $('.listBelanjaanKosong').remove();
-            var urutan = $('.nomorBelanjaan').length;
-            urutan++;
+            nomorUrut++;
+            var urutan = nomorUrut;
             if(urutan <= 0) { urutan = 1; }
             var rp = formatRupiah(total_harga);
             var tabelBelanja = $('#tabelListBelanja');
@@ -454,7 +454,6 @@
                 urutan++; // Menambah nomor urutan untuk item berikutnya
             });
         }
-
 
         // ON CHANGE TABEL LIST BELANJAAN
         let timeQty = null;
