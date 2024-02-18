@@ -36,7 +36,7 @@ Aplikasi Kasir POS & Inventory merupakan sistem manajemen penjualan dan persedia
 
 ### Penggunaan
 1. Akses aplikasi melalui browser web di `http://localhost:8000`.
-2. Masuk dengan kredensial Anda atau daftar untuk akun baru ( silahkan hilangkan disabled HTML button register pada login.blade.php ).
+2. Masuk dengan kredensial Anda atau daftar untuk akun baru (silahkan hilangkan disabled HTML button register pada login.blade.php & url pada folder routes/auth.php untuk register).
 3. Mulai mengelola penjualan, inventaris, sesuai kebutuhan bisnis Anda.
 
 ### Kontributor
