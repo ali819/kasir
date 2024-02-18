@@ -12,7 +12,7 @@ Aplikasi Kasir POS & Inventory merupakan sistem manajemen penjualan dan persedia
 
 ### Teknologi yang Digunakan
 - **Backend**: Laravel
-- **Frontend**: Javascript, Boostrap
+- **Frontend**: Javascript, Bootstrap 
 - **Database**: MySQL
 - **Dukungan Hardware**: Thermal Printer (Android & PC)
 
