@@ -57,7 +57,7 @@ Aplikasi Kasir POS sistem manajemen penjualan dan persediaan stok barang, diranc
 3. Mulai mengelola penjualan, inventaris, sesuai kebutuhan bisnis Anda.
 
 ### Kontributor
-- Ali (@ali819)
+- @ali819 - [https://alisabana.my.id](https://alisabana.my.id)
 
 ### Template
 https://adminmart.com
