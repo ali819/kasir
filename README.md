@@ -3,7 +3,7 @@
 ### Deskripsi
 Aplikasi Kasir POS & Inventory merupakan sistem manajemen penjualan dan persediaan stok barang, dirancang untuk memperlancar operasi bisnis ritel (cocok untuk toko sembako / kelontong). Dengan aplikasi ini, bisnis dapat dengan mudah mengelola transaksi penjualan, melacak tingkat persediaan secara real-time, menghasilkan dashboard yang informatif, dan banyak lagi.
 
-### Preview
+### Preview Aplikasi
 ![Preview 1](public/preview/preview-1.png)
 ![Preview 2](public/preview/preview-2.png)
 ![Preview 3](public/preview/preview-3.png)
@@ -13,6 +13,7 @@ Aplikasi Kasir POS & Inventory merupakan sistem manajemen penjualan dan persedia
 
 ### Fitur
 - **Multi Satuan**: Mendukung pengelolaan produk dengan beberapa satuan : misal penjualan telur (1/2 Kg, 1/4 Kg, 1 Kg), stiker (1 Meter, 1 Cm, dll) memudahkan dalam pengaturan inventaris.
+- **Jual Ecer / Grosir**: Barang di bedakan menjadi 2 kategori "Satuan Tetap" & "Satuan Tidak Tetap". Satuan tetap untuk barang yang bisa dijual eceran & grosir contoh : bolpoin, sabun, buku, dll. Satuan tidak tetap untuk barang yang satuan penjualannya lebih dari 1 (dijelaskan pada poin sebelumnya)
 - **Dukungan Thermal Printer**: Kompatibel dengan printer termal untuk mencetak struk transaksi pada perangkat Android dan PC.
 - **Custom Nama Toko & Alamat**: Memungkinkan untuk menyesuaikan nama toko dan alamat sesuai kebutuhan bisnis.
 - **Buka Cashdrawer Otomatis**: (Masih dalam proses pengembangan) Fitur untuk membuka laci kas secara otomatis saat transaksi selesai.
@@ -40,6 +41,9 @@ Aplikasi Kasir POS & Inventory merupakan sistem manajemen penjualan dan persedia
 
 ### Kontributor
 - Ali (@ali819)
+
+### Template
+https://adminmart.com
 
 ### Lisensi
 Proyek ini dilisensikan di bawah Lisensi MIT. Lihat file [LICENSE](LICENSE) untuk detailnya.
