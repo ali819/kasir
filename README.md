@@ -4,11 +4,28 @@
 Aplikasi Kasir POS sistem manajemen penjualan dan persediaan stok barang, dirancang untuk memperlancar operasi bisnis ritel (cocok untuk toko sembako / kelontong). Dengan aplikasi ini, bisnis dapat dengan mudah mengelola transaksi penjualan, melacak tingkat persediaan secara real-time, menghasilkan dashboard yang informatif, dan banyak lagi.
 
 ### Preview Aplikasi
+- **Tampilan grafik omzet**
+  
 ![Preview 1](public/preview/preview-1.png)
+
+- **Tampilan grafik terlaris**
+  
 ![Preview 2](public/preview/preview-2.png)
+
+- **Tampilan pengaturan printer**
+  
 ![Preview 3](public/preview/preview-3.png)
+
+- **Tampilan modal tambah list belanjaan**
+  
 ![Preview 4](public/preview/preview-4.png)
+
+- **Tampilan tambah barang (multi satuan)**
+  
 ![Preview 5](public/preview/preview-5.png)
+
+- **Tampilan tambah barang (ecer & grosir)**
+  
 ![Preview 6](public/preview/preview-6.png)
 
 ### Fitur
