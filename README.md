@@ -64,9 +64,6 @@ Aplikasi Kasir POS sistem manajemen penjualan dan persediaan stok barang, diranc
 ### Template
 https://adminmart.com
 
-### Lisensi
-Proyek ini dilisensikan di bawah Lisensi MIT. Lihat file [LICENSE](LICENSE) untuk detailnya.
-
 ### Dukungan
 Jika Anda menyukai proyek ini dan ingin memberikan dukungan, Anda dapat membelikan saya secangkir kopi melalui <a href="https://www.buymeacoffee.com/alldrive81p" target="_blank"><img src="https://img.buymeacoffee.com/button-api/?username=alldrive81p&button_shape=horizontal&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff" alt="Buy Me a Coffee" style="height: auto !important;width: auto !important;" ></a>
 
